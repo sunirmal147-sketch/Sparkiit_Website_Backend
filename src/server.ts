@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import connectDB from './config/db';
 import apiRoutes from './routes/api';
 import adminRoutes from './routes/adminRoutes';
+import publicRoutes from './routes/publicRoutes';
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/api', apiRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/public', publicRoutes);
 
 app.get('/', (req: Request, res: Response) => {
     res.send('Edutech Backend Service is running!');
