@@ -22,6 +22,11 @@ import {
     updateUserRole,
 } from '../controllers/userController';
 import { login, register } from '../controllers/authController';
+import {
+    getAllCertificates,
+    createCertificate,
+    deleteCertificate,
+} from '../controllers/certificateController';
 import { protect, authorize } from '../middleware/authMiddleware';
 
 const router = Router();
@@ -56,6 +61,11 @@ router.delete('/candidates/:id', protect, authorize('SUPER_ADMIN'), deleteCandid
 // Course assignment routes
 router.post('/candidates/:id/assign-course', protect, assignCourse);
 router.post('/candidates/:id/remove-course', protect, removeCourse);
+
+// Certificate routes
+router.get('/certificates', protect, getAllCertificates);
+router.post('/certificates', protect, authorize('SUPER_ADMIN', 'ADMIN'), createCertificate);
+router.delete('/certificates/:id', protect, authorize('SUPER_ADMIN'), deleteCertificate);
 
 export default router;
 
