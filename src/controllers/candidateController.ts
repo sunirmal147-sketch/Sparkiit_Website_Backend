@@ -121,7 +121,7 @@ export const assignCourse = async (req: Request, res: Response): Promise<void> =
         }
 
         // Check if already enrolled
-        if (candidate.enrolledCourses.some((id) => id.toString() === courseId)) {
+        if (candidate.enrolledCourses.some((id: any) => id.toString() === courseId)) {
             res.status(400).json({ success: false, message: 'Candidate already enrolled in this course' });
             return;
         }
@@ -147,7 +147,7 @@ export const removeCourse = async (req: Request, res: Response): Promise<void> =
             return;
         }
 
-        const courseIndex = candidate.enrolledCourses.findIndex((id) => id.toString() === courseId);
+        const courseIndex = candidate.enrolledCourses.findIndex((id: any) => id.toString() === courseId);
         if (courseIndex === -1) {
             res.status(400).json({ success: false, message: 'Candidate is not enrolled in this course' });
             return;
