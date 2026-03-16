@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import User, { IUser } from '../models/User';
+import User from '../models/User';
+import Candidate from '../models/Candidate';
 
 interface DecodedToken {
     id: string;
@@ -10,7 +11,7 @@ interface DecodedToken {
 declare global {
     namespace Express {
         interface Request {
-            user?: IUser;
+            user?: any;
         }
     }
 }
@@ -23,7 +24,16 @@ export const protect = async (req: Request, res: Response, next: NextFunction): 
             token = req.headers.authorization.split(' ')[1];
             const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret') as DecodedToken;
 
-            req.user = (await User.findById(decoded.id).select('-password')) as IUser;
+            if (decoded.role === 'CANDIDATE') {
+                req.user = await Candidate.findById(decoded.id).select('-password');
+            } else {
+                req.user = await User.findById(decoded.id).select('-password');
+            }
+            
+            if (!req.user) {
+                res.status(401).json({ success: false, message: 'Not authorized, user not found' });
+                return;
+            }
             next();
         } catch (error) {
             res.status(401).json({ success: false, message: 'Not authorized, token failed' });
