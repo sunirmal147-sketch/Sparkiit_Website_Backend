@@ -27,6 +27,23 @@ import {
     createCertificate,
     deleteCertificate,
 } from '../controllers/certificateController';
+import {
+    getAllContent,
+    updateContentBatch,
+    updateSingleContent,
+} from '../controllers/contentController';
+import {
+    getAllProjectsAdmin,
+    createProject,
+    updateProject,
+    deleteProject,
+} from '../controllers/projectController';
+import {
+    getAllServicesAdmin,
+    createService,
+    updateService,
+    deleteService,
+} from '../controllers/serviceController';
 import { protect, authorize } from '../middleware/authMiddleware';
 
 const router = Router();
@@ -66,6 +83,23 @@ router.post('/candidates/:id/remove-course', protect, removeCourse);
 router.get('/certificates', protect, getAllCertificates);
 router.post('/certificates', protect, authorize('SUPER_ADMIN', 'ADMIN'), createCertificate);
 router.delete('/certificates/:id', protect, authorize('SUPER_ADMIN'), deleteCertificate);
+
+// CMS: Content Routes
+router.get('/content', protect, getAllContent);
+router.put('/content/batch', protect, authorize('SUPER_ADMIN', 'ADMIN'), updateContentBatch);
+router.post('/content', protect, authorize('SUPER_ADMIN', 'ADMIN'), updateSingleContent);
+
+// CMS: Project Routes
+router.get('/projects', protect, getAllProjectsAdmin);
+router.post('/projects', protect, authorize('SUPER_ADMIN', 'ADMIN'), createProject);
+router.put('/projects/:id', protect, authorize('SUPER_ADMIN', 'ADMIN'), updateProject);
+router.delete('/projects/:id', protect, authorize('SUPER_ADMIN'), deleteProject);
+
+// CMS: Service Routes
+router.get('/services', protect, getAllServicesAdmin);
+router.post('/services', protect, authorize('SUPER_ADMIN', 'ADMIN'), createService);
+router.put('/services/:id', protect, authorize('SUPER_ADMIN', 'ADMIN'), updateService);
+router.delete('/services/:id', protect, authorize('SUPER_ADMIN'), deleteService);
 
 export default router;
 

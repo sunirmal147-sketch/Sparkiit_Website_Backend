@@ -61,7 +61,22 @@ const contents = [
 
     // Working Process Section
     { section: 'process', key: 'title', value: 'WORKING PROCESS.' },
-    { section: 'process', key: 'description', value: 'A systematic approach to turning complex ideas into seamless digital experiences.' }
+    { section: 'process', key: 'description', value: 'A systematic approach to turning complex ideas into seamless digital experiences.' },
+    { section: 'process', key: 'step1Title', value: 'STRATEGY' },
+    { section: 'process', key: 'step1Desc', value: 'We define the vision, goals, and core requirements to ensure a solid foundation for your project.' },
+    { section: 'process', key: 'step2Title', value: 'DESIGN' },
+    { section: 'process', key: 'step2Desc', value: 'Our creative team builds intuitive and visually stunning interfaces that prioritize user experience.' },
+    { section: 'process', key: 'step3Title', value: 'DEVELOP' },
+    { section: 'process', key: 'step3Desc', value: 'Scaleable, secure, and high-performance solutions built with modern technology stacks.' },
+
+    // Site Settings
+    { section: 'site', key: 'logoText', value: 'Sparkiit' },
+    { section: 'site', key: 'footerDesc', value: 'Transforming the digital landscape through innovation, design, and deep technical expertise.' },
+    { section: 'site', key: 'copyright', value: '© 2026 SPARKIIT AGENCY. ALL RIGHTS RESERVED.' },
+    { section: 'site', key: 'github', value: 'https://github.com' },
+    { section: 'site', key: 'twitter', value: 'https://twitter.com' },
+    { section: 'site', key: 'linkedin', value: 'https://linkedin.com' },
+    { section: 'site', key: 'instagram', value: 'https://instagram.com' }
 ];
 
 const seedHomepage = async () => {

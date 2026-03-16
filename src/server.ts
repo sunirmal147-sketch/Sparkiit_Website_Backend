@@ -22,6 +22,8 @@ app.use('/api', apiRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/public', publicRoutes);
 
+// ratelimmiter
+
 app.get('/', (req: Request, res: Response) => {
     res.send('Edutech Backend Service is running!');
 });
