@@ -15,14 +15,18 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
         const user = await User.findOne({ email });
         if (user && (await user.comparePassword(password))) {
+            // Store user info in session
+            (req.session as any).userId = user._id;
+            (req.session as any).role = user.role;
+
             res.json({
                 success: true,
+                message: 'Logged in successfully',
                 data: {
                     _id: user._id,
                     username: user.username,
                     email: user.email,
                     role: user.role,
-                    token: generateToken(user._id as unknown as string, user.role),
                 },
             });
         } else {
@@ -31,6 +35,29 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     } catch (error: any) {
         console.error('Login error:', error);
         res.status(500).json({ success: false, message: error.message || 'Server error', error });
+    }
+};
+
+// GET /api/admin/logout
+export const logout = async (req: Request, res: Response): Promise<void> => {
+    req.session.destroy((err) => {
+        if (err) {
+            return res.status(500).json({ success: false, message: 'Could not log out' });
+        }
+        res.clearCookie('connect.sid'); // Default cookie name
+        res.json({ success: true, message: 'Logged out successfully' });
+    });
+};
+
+// GET /api/admin/me
+export const getMe = async (req: Request, res: Response): Promise<void> => {
+    if (req.user) {
+        res.json({
+            success: true,
+            data: req.user
+        });
+    } else {
+        res.status(401).json({ success: false, message: 'Not logged in' });
     }
 };
 

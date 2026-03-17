@@ -21,7 +21,7 @@ import {
     deleteUser,
     updateUserRole,
 } from '../controllers/userController';
-import { login, register } from '../controllers/authController';
+import { login, register, logout, getMe } from '../controllers/authController';
 import {
     getAllCertificates,
     createCertificate,
@@ -67,6 +67,8 @@ const router = Router();
 // Authentication
 router.post('/login', login);
 router.post('/register', protect, authorize('SUPER_ADMIN'), register);
+router.get('/logout', logout);
+router.get('/me', protect, getMe);
 
 // User Management (Super Admin only)
 router.get('/users', protect, authorize('SUPER_ADMIN'), getAllUsers);
