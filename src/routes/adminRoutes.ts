@@ -61,6 +61,12 @@ import { getAllSocialLinks, createSocialLink, updateSocialLink, deleteSocialLink
 import { getAllFaqs, createFaq, updateFaq, deleteFaq } from '../controllers/faqController';
 import { getAllSettings, createSetting, updateSetting, deleteSetting } from '../controllers/settingController';
 import { getAllBookings, updateBookingStatus, deleteBooking } from '../controllers/bookingController';
+import {
+    getAllTestimonialsAdmin,
+    createTestimonial,
+    updateTestimonial,
+    deleteTestimonial,
+} from '../controllers/testimonialController';
 
 const router = Router();
 
@@ -204,4 +210,10 @@ router.delete('/settings/:id', protect, authorize('SUPER_ADMIN'), deleteSetting)
 router.get('/bookings', protect, getAllBookings);
 router.put('/bookings/:id', protect, authorize('SUPER_ADMIN', 'ADMIN'), updateBookingStatus);
 router.delete('/bookings/:id', protect, authorize('SUPER_ADMIN'), deleteBooking);
+
+// Testimonials
+router.get('/testimonials', protect, getAllTestimonialsAdmin);
+router.post('/testimonials', protect, authorize('SUPER_ADMIN', 'ADMIN'), createTestimonial);
+router.put('/testimonials/:id', protect, authorize('SUPER_ADMIN', 'ADMIN'), updateTestimonial);
+router.delete('/testimonials/:id', protect, authorize('SUPER_ADMIN'), deleteTestimonial);
 

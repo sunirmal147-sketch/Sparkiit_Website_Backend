@@ -7,12 +7,14 @@ import { createOrder, verifyPayment } from '../controllers/paymentController';
 import { createBooking, getMyBookings } from '../controllers/bookingController';
 import { getDashboardData, getStudentCertificates, getStudentTests, submitProject } from '../controllers/dashboardController';
 import { protect } from '../middleware/authMiddleware';
+import { getAllTestimonialsPublic } from '../controllers/testimonialController';
 
 const router = express.Router();
 
 router.get('/homepage', getHomepageData);
 router.get('/validate-certificate', validateCertificate);
 router.get('/courses', getAllCourses);
+router.get('/testimonials', getAllTestimonialsPublic);
 
 // Candidate Authentication
 router.post('/auth/signup', signup);

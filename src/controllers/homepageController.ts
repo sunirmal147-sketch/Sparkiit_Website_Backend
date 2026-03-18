@@ -2,16 +2,18 @@ import { Request, Response } from 'express';
 import Project from '../models/Project';
 import Service from '../models/Service';
 import SectionContent from '../models/SectionContent';
+import Testimonial from '../models/Testimonial';
 
 // @desc    Get all homepage data
 // @route   GET /api/public/homepage
 // @access  Public
 export const getHomepageData = async (req: Request, res: Response) => {
     try {
-        const [projects, services, contents] = await Promise.all([
+        const [projects, services, contents, testimonials] = await Promise.all([
             Project.find().sort({ order: 1 }),
             Service.find().sort({ order: 1 }),
-            SectionContent.find()
+            SectionContent.find(),
+            Testimonial.find().sort({ order: 1 })
         ]);
 
         // Transform contents array into a nested object
@@ -26,6 +28,7 @@ export const getHomepageData = async (req: Request, res: Response) => {
             data: {
                 projects,
                 services,
+                testimonials,
                 content: contentMap
             }
         });
