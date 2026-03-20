@@ -8,6 +8,9 @@ import { createBooking, getMyBookings } from '../controllers/bookingController';
 import { getDashboardData, getStudentCertificates, getStudentTests, submitProject } from '../controllers/dashboardController';
 import { protect } from '../middleware/authMiddleware';
 import { getAllTestimonialsPublic } from '../controllers/testimonialController';
+import { getAllBlogs } from '../controllers/blogController';
+import { getPublicMentors } from '../controllers/mentorController';
+import { getAllEventsPublic } from '../controllers/eventController';
 
 const router = express.Router();
 
@@ -15,6 +18,9 @@ router.get('/homepage', getHomepageData);
 router.get('/validate-certificate', validateCertificate);
 router.get('/courses', getAllCourses);
 router.get('/testimonials', getAllTestimonialsPublic);
+router.get('/blogs', getAllBlogs);
+router.get('/mentors', getPublicMentors);
+router.get('/events', getAllEventsPublic);
 
 // Candidate Authentication
 router.post('/auth/signup', signup);
