@@ -47,13 +47,18 @@ exports.getCandidateById = getCandidateById;
 // POST /api/admin/candidates
 const createCandidate = async (req, res) => {
     try {
-        const { name, email, phone, status } = req.body;
+        const { name, email, phone, status, enrolledCourses, paymentDetails, performanceMetrics, batchRank, stipendEligible, skills } = req.body;
         const candidate = await Candidate_1.default.create({
             name,
             email,
             phone: phone || '',
             status: status || 'active',
-            enrolledCourses: [],
+            enrolledCourses: enrolledCourses || [],
+            paymentDetails: paymentDetails || { paidAmount: 0, remainingAmount: 0 },
+            performanceMetrics: performanceMetrics || { overallScore: 0, attendance: 0, progress: 0, averageScore: 0 },
+            batchRank: batchRank || 'N/A',
+            stipendEligible: stipendEligible || false,
+            skills: skills || { tech: 0, softSkills: 0, blockchain: 0, smartContracts: 0, frontend: 0, ai: 0, systemDesign: 0 },
         });
         res.status(201).json({ success: true, data: candidate });
     }
