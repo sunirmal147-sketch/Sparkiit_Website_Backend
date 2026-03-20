@@ -17,7 +17,7 @@ const createAdmin = async () => {
         const userData = {
             username: 'sunirmal',
             email: 'sunirmal147@gmail.com',
-            password: '1234', // Changed to match frontend login requirement
+            password: 'password123', // Changed to match frontend login requirement
             role: 'SUPER_ADMIN'
         };
         const existingUser = await User_1.default.findOne({ email: userData.email });
