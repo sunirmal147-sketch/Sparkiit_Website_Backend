@@ -32,8 +32,12 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const CandidateSchema = new mongoose_1.Schema({
     name: {
         type: String,
@@ -47,6 +51,11 @@ const CandidateSchema = new mongoose_1.Schema({
         trim: true,
         lowercase: true,
     },
+    password: {
+        type: String,
+        minlength: 4,
+        select: false,
+    },
     phone: {
         type: String,
         default: '',
@@ -58,6 +67,44 @@ const CandidateSchema = new mongoose_1.Schema({
             ref: 'Course',
         },
     ],
+    paymentDetails: {
+        paidAmount: { type: Number, default: 0 },
+        remainingAmount: { type: Number, default: 0 },
+    },
+    performanceMetrics: {
+        overallScore: { type: Number, default: 0 },
+        attendance: { type: Number, default: 0 },
+        progress: { type: Number, default: 0 },
+        averageScore: { type: Number, default: 0 },
+    },
+    batchRank: { type: String, default: 'N/A' },
+    stipendEligible: { type: Boolean, default: false },
+    skills: {
+        tech: { type: Number, default: 0 },
+        softSkills: { type: Number, default: 0 },
+        blockchain: { type: Number, default: 0 },
+        smartContracts: { type: Number, default: 0 },
+        frontend: { type: Number, default: 0 },
+        ai: { type: Number, default: 0 },
+        systemDesign: { type: Number, default: 0 },
+    },
+    completedTests: [
+        {
+            testId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Test' },
+            score: Number,
+            date: { type: Date, default: Date.now }
+        }
+    ],
+    submittedProjects: [
+        {
+            projectId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Project' },
+            repoUrl: String,
+            status: { type: String, enum: ['pending', 'reviewed', 'rejected'], default: 'pending' },
+            feedback: String,
+            grade: String,
+            date: { type: Date, default: Date.now }
+        }
+    ],
     status: {
         type: String,
         enum: ['active', 'inactive'],
@@ -66,4 +113,19 @@ const CandidateSchema = new mongoose_1.Schema({
 }, {
     timestamps: true,
 });
-exports.default = mongoose_1.default.model('Candidate', CandidateSchema);
+// Hash password before saving
+CandidateSchema.pre('save', async function () {
+    if (!this.isModified('password'))
+        return;
+    if (!this.password)
+        return;
+    const salt = await bcryptjs_1.default.genSalt(10);
+    this.password = await bcryptjs_1.default.hash(this.password, salt);
+});
+// Compare password method
+CandidateSchema.methods.comparePassword = async function (password) {
+    if (!this.password)
+        return false;
+    return await bcryptjs_1.default.compare(password, this.password);
+};
+exports.default = mongoose_1.default.models.Candidate || mongoose_1.default.model('Candidate', CandidateSchema);
