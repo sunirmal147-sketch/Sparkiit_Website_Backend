@@ -67,6 +67,18 @@ import {
     updateTestimonial,
     deleteTestimonial,
 } from '../controllers/testimonialController';
+import {
+    getAllMentors,
+    createMentor,
+    updateMentor,
+    deleteMentor,
+} from '../controllers/mentorController';
+import {
+    getAllEventsAdmin,
+    createEvent,
+    updateEvent,
+    deleteEvent,
+} from '../controllers/eventController';
 
 const router = Router();
 
@@ -216,4 +228,16 @@ router.get('/testimonials', protect, getAllTestimonialsAdmin);
 router.post('/testimonials', protect, authorize('SUPER_ADMIN', 'ADMIN'), createTestimonial);
 router.put('/testimonials/:id', protect, authorize('SUPER_ADMIN', 'ADMIN'), updateTestimonial);
 router.delete('/testimonials/:id', protect, authorize('SUPER_ADMIN'), deleteTestimonial);
+
+// Mentors
+router.get('/mentors', protect, getAllMentors);
+router.post('/mentors', protect, authorize('SUPER_ADMIN', 'ADMIN'), createMentor);
+router.put('/mentors/:id', protect, authorize('SUPER_ADMIN', 'ADMIN'), updateMentor);
+router.delete('/mentors/:id', protect, authorize('SUPER_ADMIN'), deleteMentor);
+
+// Events
+router.get('/events', protect, getAllEventsAdmin);
+router.post('/events', protect, authorize('SUPER_ADMIN', 'ADMIN'), createEvent);
+router.put('/events/:id', protect, authorize('SUPER_ADMIN', 'ADMIN'), updateEvent);
+router.delete('/events/:id', protect, authorize('SUPER_ADMIN'), deleteEvent);
 
