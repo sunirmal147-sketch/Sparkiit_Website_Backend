@@ -43,13 +43,18 @@ export const getCandidateById = async (req: Request, res: Response): Promise<voi
 // POST /api/admin/candidates
 export const createCandidate = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { name, email, phone, status } = req.body;
+        const { name, email, phone, status, enrolledCourses, paymentDetails, performanceMetrics, batchRank, stipendEligible, skills } = req.body;
         const candidate = await Candidate.create({
             name,
             email,
             phone: phone || '',
             status: status || 'active',
-            enrolledCourses: [],
+            enrolledCourses: enrolledCourses || [],
+            paymentDetails: paymentDetails || { paidAmount: 0, remainingAmount: 0 },
+            performanceMetrics: performanceMetrics || { overallScore: 0, attendance: 0, progress: 0, averageScore: 0 },
+            batchRank: batchRank || 'N/A',
+            stipendEligible: stipendEligible || false,
+            skills: skills || { tech: 0, softSkills: 0, blockchain: 0, smartContracts: 0, frontend: 0, ai: 0, systemDesign: 0 },
         });
         res.status(201).json({ success: true, data: candidate });
     } catch (error: unknown) {

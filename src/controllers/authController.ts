@@ -15,6 +15,9 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
         const user = await User.findOne({ email });
         if (user && (await user.comparePassword(password))) {
+            // Generate token
+            const token = generateToken(user._id.toString(), user.role);
+
             // Store user info in session
             (req.session as any).userId = user._id;
             (req.session as any).role = user.role;
@@ -27,6 +30,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
                     username: user.username,
                     email: user.email,
                     role: user.role,
+                    token: token,
                 },
             });
         } else {

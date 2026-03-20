@@ -7,6 +7,27 @@ export interface ICandidate extends Document {
     password?: string;
     phone: string;
     enrolledCourses: Types.ObjectId[];
+    paymentDetails: {
+        paidAmount: number;
+        remainingAmount: number;
+    };
+    batchRank: string;
+    stipendEligible: boolean;
+    performanceMetrics: {
+        overallScore: number;
+        attendance: number;
+        progress: number;
+        averageScore: number;
+    };
+    skills: {
+        tech: number;
+        softSkills: number;
+        blockchain: number;
+        smartContracts: number;
+        frontend: number;
+        ai: number;
+        systemDesign: number;
+    };
     status: 'active' | 'inactive';
     comparePassword(password: string): Promise<boolean>;
     createdAt: Date;
@@ -43,10 +64,26 @@ const CandidateSchema: Schema = new Schema(
                 ref: 'Course',
             },
         ],
+        paymentDetails: {
+            paidAmount: { type: Number, default: 0 },
+            remainingAmount: { type: Number, default: 0 },
+        },
         performanceMetrics: {
             overallScore: { type: Number, default: 0 },
             attendance: { type: Number, default: 0 },
             progress: { type: Number, default: 0 },
+            averageScore: { type: Number, default: 0 },
+        },
+        batchRank: { type: String, default: 'N/A' },
+        stipendEligible: { type: Boolean, default: false },
+        skills: {
+            tech: { type: Number, default: 0 },
+            softSkills: { type: Number, default: 0 },
+            blockchain: { type: Number, default: 0 },
+            smartContracts: { type: Number, default: 0 },
+            frontend: { type: Number, default: 0 },
+            ai: { type: Number, default: 0 },
+            systemDesign: { type: Number, default: 0 },
         },
         completedTests: [
             {
