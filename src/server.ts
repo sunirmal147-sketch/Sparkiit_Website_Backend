@@ -19,32 +19,31 @@ const port = process.env.PORT || 5000;
 // Trust proxy for secure cookies on Vercel/Heroku
 app.set('trust proxy', 1);
 
-// Standard CORS
-app.use(cors({
-    origin: function (origin, callback) {
-        // Allow requests with no origin (like mobile apps or curl)
-        if (!origin) return callback(null, true);
-        
-        const allowedOrigins = [
-            process.env.FRONTEND_URI, 
-            'http://localhost:3000', 
-            'http://127.0.0.1:3000',
-            'https://sparkiit.vercel.app', // Adding a likely production URL
-            'https://sparkiit-frontend.vercel.app'
-        ].filter(Boolean);
+// Manual CORS & Preflight Handling (More robust for Vercel/Proxy)
+app.use((req: Request, res: Response, next) => {
+    const origin = req.headers.origin;
+    const allowedOrigins = [
+        process.env.FRONTEND_URI,
+        'http://localhost:3000',
+        'http://127.0.0.1:3000',
+        'https://sparkiit.vercel.app',
+        'https://sparkiit-frontend.vercel.app'
+    ].filter(Boolean);
 
-        if (allowedOrigins.indexOf(origin) !== -1 || origin.includes('vercel.app')) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
-    preflightContinue: false,
-    optionsSuccessStatus: 204
-}));
+    if (origin && (allowedOrigins.indexOf(origin) !== -1 || origin.includes('vercel.app'))) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    }
+    
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
+
+    if (req.method === 'OPTIONS') {
+        res.status(204).end();
+        return;
+    }
+    next();
+});
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
