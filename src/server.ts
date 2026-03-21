@@ -27,7 +27,8 @@ app.use((req: Request, res: Response, next) => {
         'http://localhost:3000',
         'http://127.0.0.1:3000',
         'https://sparkiit.vercel.app',
-        'https://sparkiit-frontend.vercel.app'
+        'https://sparkiit-frontend.vercel.app',
+        'https://sparkiit-website-frontend-git-main-sunirmal147-7225s-projects.vercel.app'
     ].filter(Boolean);
 
     if (origin && (allowedOrigins.indexOf(origin) !== -1 || origin.includes('vercel.app'))) {
