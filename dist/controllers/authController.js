@@ -17,6 +17,11 @@ const login = async (req, res) => {
         const { email, password } = req.body;
         const user = await User_1.default.findOne({ email });
         if (user && (await user.comparePassword(password))) {
+            // Check if user is a regular USER (not allowed in CMS)
+            if (user.role === 'USER') {
+                res.status(403).json({ success: false, message: 'Admins only. Regular users cannot access the CMS portal.' });
+                return;
+            }
             // Generate token
             const token = generateToken(user._id.toString(), user.role);
             // Store user info in session

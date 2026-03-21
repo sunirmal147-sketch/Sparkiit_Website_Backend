@@ -77,6 +77,9 @@ app.get('/', (req: Request, res: Response) => {
     res.send('Edutech Backend Service is running!');
 });
 
+// Export for Vercel serverless functions
+export default app;
+
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });

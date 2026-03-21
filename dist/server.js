@@ -4,7 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const db_1 = __importDefault(require("./config/db"));
 const express_session_1 = __importDefault(require("express-session"));
@@ -17,12 +16,31 @@ dotenv_1.default.config();
 (0, db_1.default)();
 const app = (0, express_1.default)();
 const port = process.env.PORT || 5000;
-app.use((0, cors_1.default)({
-    origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-}));
+// Trust proxy for secure cookies on Vercel/Heroku
+app.set('trust proxy', 1);
+// Manual CORS & Preflight Handling (More robust for Vercel/Proxy)
+app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    const allowedOrigins = [
+        process.env.FRONTEND_URI,
+        'http://localhost:3000',
+        'http://127.0.0.1:3000',
+        'https://sparkiit.vercel.app',
+        'https://sparkiit-frontend.vercel.app',
+        'https://sparkiit-website-frontend-git-main-sunirmal147-7225s-projects.vercel.app'
+    ].filter(Boolean);
+    if (origin && (allowedOrigins.indexOf(origin) !== -1 || origin.includes('vercel.app'))) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    }
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
+    if (req.method === 'OPTIONS') {
+        res.status(204).end();
+        return;
+    }
+    next();
+});
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 // Session Configuration
@@ -39,7 +57,7 @@ app.use((0, express_session_1.default)({
         secure: process.env.NODE_ENV === 'production',
         httpOnly: true,
         maxAge: 14 * 24 * 60 * 60 * 1000, // 14 days
-        sameSite: 'lax'
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
     }
 }));
 app.use('/api', api_1.default);
@@ -49,6 +67,8 @@ app.use('/api/public', publicRoutes_1.default);
 app.get('/', (req, res) => {
     res.send('Edutech Backend Service is running!');
 });
+// Export for Vercel serverless functions
+exports.default = app;
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
