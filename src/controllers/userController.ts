@@ -36,7 +36,7 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
 export const updateUserRole = async (req: Request, res: Response): Promise<void> => {
     try {
         const { role } = req.body;
-        if (!['SUPER_ADMIN', 'ADMIN'].includes(role)) {
+        if (!['SUPER_ADMIN', 'ADMIN', 'USER'].includes(role)) {
             res.status(400).json({ success: false, message: 'Invalid role' });
             return;
         }

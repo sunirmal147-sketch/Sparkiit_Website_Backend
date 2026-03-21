@@ -84,14 +84,14 @@ const router = Router();
 
 // Authentication
 router.post('/login', login);
-router.post('/register', protect, authorize('SUPER_ADMIN'), register);
+router.post('/register', protect, authorize('SUPER_ADMIN', 'ADMIN'), register);
 router.get('/logout', logout);
 router.get('/me', protect, getMe);
 
-// User Management (Super Admin only)
-router.get('/users', protect, authorize('SUPER_ADMIN'), getAllUsers);
-router.put('/users/:id/role', protect, authorize('SUPER_ADMIN'), updateUserRole);
-router.delete('/users/:id', protect, authorize('SUPER_ADMIN'), deleteUser);
+// User Management (Super Admin & Admin can manage)
+router.get('/users', protect, authorize('SUPER_ADMIN', 'ADMIN'), getAllUsers);
+router.put('/users/:id/role', protect, authorize('SUPER_ADMIN', 'ADMIN'), updateUserRole);
+router.delete('/users/:id', protect, authorize('SUPER_ADMIN', 'ADMIN'), deleteUser);
 
 
 // Dashboard stats
@@ -100,144 +100,146 @@ router.get('/stats', protect, getDashboardStats);
 // Course routes
 router.get('/courses', protect, getAllCourses);
 router.get('/courses/:id', protect, getCourseById);
-router.post('/courses', protect, authorize('SUPER_ADMIN', 'ADMIN'), createCourse);
-router.put('/courses/:id', protect, authorize('SUPER_ADMIN', 'ADMIN'), updateCourse);
+router.post('/courses', protect, authorize('SUPER_ADMIN'), createCourse);
+router.put('/courses/:id', protect, authorize('SUPER_ADMIN'), updateCourse);
 router.delete('/courses/:id', protect, authorize('SUPER_ADMIN'), deleteCourse);
 
 // Candidate routes
-router.get('/candidates', protect, getAllCandidates);
-router.get('/candidates/:id', protect, getCandidateById);
-router.post('/candidates', protect, createCandidate);
-router.put('/candidates/:id', protect, updateCandidate);
-router.delete('/candidates/:id', protect, authorize('SUPER_ADMIN'), deleteCandidate);
+router.get('/candidates', protect, authorize('SUPER_ADMIN', 'ADMIN'), getAllCandidates);
+router.get('/candidates/:id', protect, authorize('SUPER_ADMIN', 'ADMIN'), getCandidateById);
+router.post('/candidates', protect, authorize('SUPER_ADMIN', 'ADMIN'), createCandidate);
+router.put('/candidates/:id', protect, authorize('SUPER_ADMIN', 'ADMIN'), updateCandidate);
+router.delete('/candidates/:id', protect, authorize('SUPER_ADMIN', 'ADMIN'), deleteCandidate);
 
 // Course assignment routes
-router.post('/candidates/:id/assign-course', protect, assignCourse);
-router.post('/candidates/:id/remove-course', protect, removeCourse);
+router.post('/candidates/:id/assign-course', protect, authorize('SUPER_ADMIN', 'ADMIN'), assignCourse);
+router.post('/candidates/:id/remove-course', protect, authorize('SUPER_ADMIN', 'ADMIN'), removeCourse);
 
 // Certificate routes
 router.get('/certificates', protect, getAllCertificates);
-router.post('/certificates', protect, authorize('SUPER_ADMIN', 'ADMIN'), createCertificate);
+router.post('/certificates', protect, authorize('SUPER_ADMIN'), createCertificate);
 router.delete('/certificates/:id', protect, authorize('SUPER_ADMIN'), deleteCertificate);
 
 // CMS: Content Routes
 router.get('/content', protect, getAllContent);
-router.put('/content/batch', protect, authorize('SUPER_ADMIN', 'ADMIN'), updateContentBatch);
-router.post('/content', protect, authorize('SUPER_ADMIN', 'ADMIN'), updateSingleContent);
+router.put('/content/batch', protect, authorize('SUPER_ADMIN'), updateContentBatch);
+router.post('/content', protect, authorize('SUPER_ADMIN'), updateSingleContent);
 
 // CMS: Project Routes
 router.get('/projects', protect, getAllProjectsAdmin);
-router.post('/projects', protect, authorize('SUPER_ADMIN', 'ADMIN'), createProject);
-router.put('/projects/:id', protect, authorize('SUPER_ADMIN', 'ADMIN'), updateProject);
+router.post('/projects', protect, authorize('SUPER_ADMIN'), createProject);
+router.put('/projects/:id', protect, authorize('SUPER_ADMIN'), updateProject);
 router.delete('/projects/:id', protect, authorize('SUPER_ADMIN'), deleteProject);
 
 // CMS: Service Routes
 router.get('/services', protect, getAllServicesAdmin);
-router.post('/services', protect, authorize('SUPER_ADMIN', 'ADMIN'), createService);
-router.put('/services/:id', protect, authorize('SUPER_ADMIN', 'ADMIN'), updateService);
+router.post('/services', protect, authorize('SUPER_ADMIN'), createService);
+router.put('/services/:id', protect, authorize('SUPER_ADMIN'), updateService);
 router.delete('/services/:id', protect, authorize('SUPER_ADMIN'), deleteService);
 
-export default router;
+// --- NEW ENDPOINTS ---
 
 // --- NEW ENDPOINTS ---
 // Badges
 router.get('/badges', protect, getAllBadges);
-router.post('/badges', protect, authorize('SUPER_ADMIN', 'ADMIN'), createBadge);
-router.put('/badges/:id', protect, authorize('SUPER_ADMIN', 'ADMIN'), updateBadge);
+router.post('/badges', protect, authorize('SUPER_ADMIN'), createBadge);
+router.put('/badges/:id', protect, authorize('SUPER_ADMIN'), updateBadge);
 router.delete('/badges/:id', protect, authorize('SUPER_ADMIN'), deleteBadge);
 
 // Blogs
 router.get('/blogs', protect, getAllBlogs);
-router.post('/blogs', protect, authorize('SUPER_ADMIN', 'ADMIN'), createBlog);
-router.put('/blogs/:id', protect, authorize('SUPER_ADMIN', 'ADMIN'), updateBlog);
+router.post('/blogs', protect, authorize('SUPER_ADMIN'), createBlog);
+router.put('/blogs/:id', protect, authorize('SUPER_ADMIN'), updateBlog);
 router.delete('/blogs/:id', protect, authorize('SUPER_ADMIN'), deleteBlog);
 
 // Orders
 router.get('/orders', protect, getAllOrders);
-router.post('/orders', protect, authorize('SUPER_ADMIN', 'ADMIN'), createOrder);
-router.put('/orders/:id', protect, authorize('SUPER_ADMIN', 'ADMIN'), updateOrder);
+router.post('/orders', protect, authorize('SUPER_ADMIN'), createOrder);
+router.put('/orders/:id', protect, authorize('SUPER_ADMIN'), updateOrder);
 router.delete('/orders/:id', protect, authorize('SUPER_ADMIN'), deleteOrder);
 
 // Coupons
 router.get('/coupons', protect, getAllCoupons);
-router.post('/coupons', protect, authorize('SUPER_ADMIN', 'ADMIN'), createCoupon);
-router.put('/coupons/:id', protect, authorize('SUPER_ADMIN', 'ADMIN'), updateCoupon);
+router.post('/coupons', protect, authorize('SUPER_ADMIN'), createCoupon);
+router.put('/coupons/:id', protect, authorize('SUPER_ADMIN'), updateCoupon);
 router.delete('/coupons/:id', protect, authorize('SUPER_ADMIN'), deleteCoupon);
 
 // Withdrawals
 router.get('/withdrawals', protect, getAllWithdrawals);
-router.post('/withdrawals', protect, authorize('SUPER_ADMIN', 'ADMIN'), createWithdrawal);
-router.put('/withdrawals/:id', protect, authorize('SUPER_ADMIN', 'ADMIN'), updateWithdrawal);
+router.post('/withdrawals', protect, authorize('SUPER_ADMIN'), createWithdrawal);
+router.put('/withdrawals/:id', protect, authorize('SUPER_ADMIN'), updateWithdrawal);
 router.delete('/withdrawals/:id', protect, authorize('SUPER_ADMIN'), deleteWithdrawal);
 
 // Locations
 router.get('/locations', protect, getAllLocations);
-router.post('/locations', protect, authorize('SUPER_ADMIN', 'ADMIN'), createLocation);
-router.put('/locations/:id', protect, authorize('SUPER_ADMIN', 'ADMIN'), updateLocation);
+router.post('/locations', protect, authorize('SUPER_ADMIN'), createLocation);
+router.put('/locations/:id', protect, authorize('SUPER_ADMIN'), updateLocation);
 router.delete('/locations/:id', protect, authorize('SUPER_ADMIN'), deleteLocation);
 
 // Brands
 router.get('/brands', protect, getAllBrands);
-router.post('/brands', protect, authorize('SUPER_ADMIN', 'ADMIN'), createBrand);
-router.put('/brands/:id', protect, authorize('SUPER_ADMIN', 'ADMIN'), updateBrand);
+router.post('/brands', protect, authorize('SUPER_ADMIN'), createBrand);
+router.put('/brands/:id', protect, authorize('SUPER_ADMIN'), updateBrand);
 router.delete('/brands/:id', protect, authorize('SUPER_ADMIN'), deleteBrand);
 
 // FooterSettings
 router.get('/footer-settings', protect, getAllFooterSettings);
-router.post('/footer-settings', protect, authorize('SUPER_ADMIN', 'ADMIN'), createFooterSetting);
-router.put('/footer-settings/:id', protect, authorize('SUPER_ADMIN', 'ADMIN'), updateFooterSetting);
+router.post('/footer-settings', protect, authorize('SUPER_ADMIN'), createFooterSetting);
+router.put('/footer-settings/:id', protect, authorize('SUPER_ADMIN'), updateFooterSetting);
 router.delete('/footer-settings/:id', protect, authorize('SUPER_ADMIN'), deleteFooterSetting);
 
 // Menus
 router.get('/menus', protect, getAllMenus);
-router.post('/menus', protect, authorize('SUPER_ADMIN', 'ADMIN'), createMenu);
-router.put('/menus/:id', protect, authorize('SUPER_ADMIN', 'ADMIN'), updateMenu);
+router.post('/menus', protect, authorize('SUPER_ADMIN'), createMenu);
+router.put('/menus/:id', protect, authorize('SUPER_ADMIN'), updateMenu);
 router.delete('/menus/:id', protect, authorize('SUPER_ADMIN'), deleteMenu);
 
 // PageModels
 router.get('/pages', protect, getAllPageModels);
-router.post('/pages', protect, authorize('SUPER_ADMIN', 'ADMIN'), createPageModel);
-router.put('/pages/:id', protect, authorize('SUPER_ADMIN', 'ADMIN'), updatePageModel);
+router.post('/pages', protect, authorize('SUPER_ADMIN'), createPageModel);
+router.put('/pages/:id', protect, authorize('SUPER_ADMIN'), updatePageModel);
 router.delete('/pages/:id', protect, authorize('SUPER_ADMIN'), deletePageModel);
 
 // SocialLinks
 router.get('/social-links', protect, getAllSocialLinks);
-router.post('/social-links', protect, authorize('SUPER_ADMIN', 'ADMIN'), createSocialLink);
-router.put('/social-links/:id', protect, authorize('SUPER_ADMIN', 'ADMIN'), updateSocialLink);
+router.post('/social-links', protect, authorize('SUPER_ADMIN'), createSocialLink);
+router.put('/social-links/:id', protect, authorize('SUPER_ADMIN'), updateSocialLink);
 router.delete('/social-links/:id', protect, authorize('SUPER_ADMIN'), deleteSocialLink);
 
 // Faqs
 router.get('/faqs', protect, getAllFaqs);
-router.post('/faqs', protect, authorize('SUPER_ADMIN', 'ADMIN'), createFaq);
-router.put('/faqs/:id', protect, authorize('SUPER_ADMIN', 'ADMIN'), updateFaq);
+router.post('/faqs', protect, authorize('SUPER_ADMIN'), createFaq);
+router.put('/faqs/:id', protect, authorize('SUPER_ADMIN'), updateFaq);
 router.delete('/faqs/:id', protect, authorize('SUPER_ADMIN'), deleteFaq);
 
 // Settings
 router.get('/settings', protect, getAllSettings);
-router.post('/settings', protect, authorize('SUPER_ADMIN', 'ADMIN'), createSetting);
-router.put('/settings/:id', protect, authorize('SUPER_ADMIN', 'ADMIN'), updateSetting);
+router.post('/settings', protect, authorize('SUPER_ADMIN'), createSetting);
+router.put('/settings/:id', protect, authorize('SUPER_ADMIN'), updateSetting);
 router.delete('/settings/:id', protect, authorize('SUPER_ADMIN'), deleteSetting);
 
 // Bookings
 router.get('/bookings', protect, getAllBookings);
-router.put('/bookings/:id', protect, authorize('SUPER_ADMIN', 'ADMIN'), updateBookingStatus);
+router.put('/bookings/:id', protect, authorize('SUPER_ADMIN'), updateBookingStatus);
 router.delete('/bookings/:id', protect, authorize('SUPER_ADMIN'), deleteBooking);
 
 // Testimonials
 router.get('/testimonials', protect, getAllTestimonialsAdmin);
-router.post('/testimonials', protect, authorize('SUPER_ADMIN', 'ADMIN'), createTestimonial);
-router.put('/testimonials/:id', protect, authorize('SUPER_ADMIN', 'ADMIN'), updateTestimonial);
+router.post('/testimonials', protect, authorize('SUPER_ADMIN'), createTestimonial);
+router.put('/testimonials/:id', protect, authorize('SUPER_ADMIN'), updateTestimonial);
 router.delete('/testimonials/:id', protect, authorize('SUPER_ADMIN'), deleteTestimonial);
 
 // Mentors
 router.get('/mentors', protect, getAllMentors);
-router.post('/mentors', protect, authorize('SUPER_ADMIN', 'ADMIN'), createMentor);
-router.put('/mentors/:id', protect, authorize('SUPER_ADMIN', 'ADMIN'), updateMentor);
+router.post('/mentors', protect, authorize('SUPER_ADMIN'), createMentor);
+router.put('/mentors/:id', protect, authorize('SUPER_ADMIN'), updateMentor);
 router.delete('/mentors/:id', protect, authorize('SUPER_ADMIN'), deleteMentor);
 
 // Events
 router.get('/events', protect, getAllEventsAdmin);
-router.post('/events', protect, authorize('SUPER_ADMIN', 'ADMIN'), createEvent);
-router.put('/events/:id', protect, authorize('SUPER_ADMIN', 'ADMIN'), updateEvent);
+router.post('/events', protect, authorize('SUPER_ADMIN'), createEvent);
+router.put('/events/:id', protect, authorize('SUPER_ADMIN'), updateEvent);
 router.delete('/events/:id', protect, authorize('SUPER_ADMIN'), deleteEvent);
+
+export default router;
 

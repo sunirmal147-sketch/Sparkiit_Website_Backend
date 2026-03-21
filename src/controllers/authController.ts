@@ -15,6 +15,12 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
         const user = await User.findOne({ email });
         if (user && (await user.comparePassword(password))) {
+            // Check if user is a regular USER (not allowed in CMS)
+            if (user.role === 'USER') {
+                res.status(403).json({ success: false, message: 'Admins only. Regular users cannot access the CMS portal.' });
+                return;
+            }
+
             // Generate token
             const token = generateToken(user._id.toString(), user.role);
 

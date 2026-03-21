@@ -5,7 +5,7 @@ export interface IUser extends Document {
     username: string;
     email: string;
     password: string;
-    role: 'SUPER_ADMIN' | 'ADMIN';
+    role: 'SUPER_ADMIN' | 'ADMIN' | 'USER';
     comparePassword(password: string): Promise<boolean>;
 }
 
@@ -31,7 +31,7 @@ const UserSchema: Schema = new Schema(
         },
         role: {
             type: String,
-            enum: ['SUPER_ADMIN', 'ADMIN'],
+            enum: ['SUPER_ADMIN', 'ADMIN', 'USER'],
             default: 'ADMIN',
         },
     },
