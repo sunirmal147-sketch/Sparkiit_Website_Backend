@@ -16,12 +16,36 @@ connectDB();
 const app = express();
 const port = process.env.PORT || 5000;
 
+// Trust proxy for secure cookies on Vercel/Heroku
+app.set('trust proxy', 1);
+
+// Standard CORS
 app.use(cors({
-    origin: [process.env.FRONTEND_URI || 'http://localhost:3000', 'http://127.0.0.1:3000'],
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl)
+        if (!origin) return callback(null, true);
+        
+        const allowedOrigins = [
+            process.env.FRONTEND_URI, 
+            'http://localhost:3000', 
+            'http://127.0.0.1:3000',
+            'https://sparkiit.vercel.app', // Adding a likely production URL
+            'https://sparkiit-frontend.vercel.app'
+        ].filter(Boolean);
+
+        if (allowedOrigins.indexOf(origin) !== -1 || origin.includes('vercel.app')) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+    preflightContinue: false,
+    optionsSuccessStatus: 204
 }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
