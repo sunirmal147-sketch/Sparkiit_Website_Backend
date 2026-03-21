@@ -36,6 +36,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
                     username: user.username,
                     email: user.email,
                     role: user.role,
+                    allowedSections: user.allowedSections,
                     token: token,
                 },
             });
@@ -74,7 +75,7 @@ export const getMe = async (req: Request, res: Response): Promise<void> => {
 // POST /api/auth/register (Protected, Super Admin only can create admins)
 export const register = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { username, email, password, role } = req.body;
+        const { username, email, password, role, allowedSections } = req.body;
 
         const userExists = await User.findOne({ email });
         if (userExists) {
@@ -87,6 +88,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
             email,
             password,
             role: role || 'ADMIN',
+            allowedSections: allowedSections || [],
         });
 
         res.status(201).json({
@@ -96,6 +98,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
                 username: user.username,
                 email: user.email,
                 role: user.role,
+                allowedSections: user.allowedSections,
             },
         });
     } catch (error) {

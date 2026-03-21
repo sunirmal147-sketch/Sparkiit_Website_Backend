@@ -33,17 +33,24 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
 };
 
 // PUT /api/admin/users/:id/role
+// Notice: We keep the route name but we'll use it to update role and allowedSections
 export const updateUserRole = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { role } = req.body;
-        if (!['SUPER_ADMIN', 'ADMIN', 'USER'].includes(role)) {
+        const { role, allowedSections } = req.body;
+        
+        const validRoles = ['SUPER_ADMIN', 'ADMIN', 'HR', 'TEAM_LEADER', 'MANAGER', 'BDE', 'BDA', 'USER'];
+        if (role && !validRoles.includes(role)) {
             res.status(400).json({ success: false, message: 'Invalid role' });
             return;
         }
 
+        const updateData: any = {};
+        if (role) updateData.role = role;
+        if (allowedSections) updateData.allowedSections = allowedSections;
+
         const user = await User.findByIdAndUpdate(
             req.params.id,
-            { role },
+            updateData,
             { new: true, runValidators: true }
         ).select('-password');
 

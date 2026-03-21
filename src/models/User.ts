@@ -5,7 +5,8 @@ export interface IUser extends Document {
     username: string;
     email: string;
     password: string;
-    role: 'SUPER_ADMIN' | 'ADMIN' | 'USER';
+    role: 'SUPER_ADMIN' | 'ADMIN' | 'HR' | 'TEAM_LEADER' | 'MANAGER' | 'BDE' | 'BDA' | 'USER';
+    allowedSections: string[];
     comparePassword(password: string): Promise<boolean>;
 }
 
@@ -31,9 +32,13 @@ const UserSchema: Schema = new Schema(
         },
         role: {
             type: String,
-            enum: ['SUPER_ADMIN', 'ADMIN', 'USER'],
+            enum: ['SUPER_ADMIN', 'ADMIN', 'HR', 'TEAM_LEADER', 'MANAGER', 'BDE', 'BDA', 'USER'],
             default: 'ADMIN',
         },
+        allowedSections: {
+            type: [String],
+            default: []
+        }
     },
     {
         timestamps: true,
