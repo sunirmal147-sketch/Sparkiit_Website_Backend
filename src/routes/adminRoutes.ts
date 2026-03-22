@@ -25,6 +25,7 @@ import { login, register, logout, getMe } from '../controllers/authController';
 import {
     getAllCertificates,
     createCertificate,
+    bulkCreateCertificates,
     deleteCertificate,
 } from '../controllers/certificateController';
 import {
@@ -79,6 +80,7 @@ import {
     updateEvent,
     deleteEvent,
 } from '../controllers/eventController';
+import { logAttendance, getAllAttendance, deleteAttendance } from '../controllers/attendanceController';
 
 const router = Router();
 
@@ -118,6 +120,7 @@ router.post('/candidates/:id/remove-course', protect, authorize('SUPER_ADMIN', '
 // Certificate routes
 router.get('/certificates', protect, getAllCertificates);
 router.post('/certificates', protect, authorize('SUPER_ADMIN'), createCertificate);
+router.post('/certificates/bulk', protect, authorize('SUPER_ADMIN'), bulkCreateCertificates);
 router.delete('/certificates/:id', protect, authorize('SUPER_ADMIN'), deleteCertificate);
 
 // CMS: Content Routes
@@ -240,6 +243,12 @@ router.get('/events', protect, getAllEventsAdmin);
 router.post('/events', protect, authorize('SUPER_ADMIN'), createEvent);
 router.put('/events/:id', protect, authorize('SUPER_ADMIN'), updateEvent);
 router.delete('/events/:id', protect, authorize('SUPER_ADMIN'), deleteEvent);
+
+// Attendance
+router.get('/attendance', protect, authorize('SUPER_ADMIN'), getAllAttendance);
+router.post('/attendance', protect, logAttendance);
+router.delete('/attendance/:id', protect, authorize('SUPER_ADMIN'), deleteAttendance);
+
 
 export default router;
 

@@ -36,7 +36,7 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
 // Notice: We keep the route name but we'll use it to update role and allowedSections
 export const updateUserRole = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { role, allowedSections } = req.body;
+        const { role, allowedSections, password } = req.body;
         
         const validRoles = ['SUPER_ADMIN', 'ADMIN', 'HR', 'TEAM_LEADER', 'MANAGER', 'BDE', 'BDA', 'USER'];
         if (role && !validRoles.includes(role)) {
@@ -47,19 +47,25 @@ export const updateUserRole = async (req: Request, res: Response): Promise<void>
         const updateData: any = {};
         if (role) updateData.role = role;
         if (allowedSections) updateData.allowedSections = allowedSections;
+        if (password) updateData.password = password;
 
-        const user = await User.findByIdAndUpdate(
-            req.params.id,
-            updateData,
-            { new: true, runValidators: true }
-        ).select('-password');
-
+        const user = await User.findById(req.params.id);
         if (!user) {
             res.status(404).json({ success: false, message: 'User not found' });
             return;
         }
 
-        res.json({ success: true, data: user });
+        if (role) user.role = role;
+        if (allowedSections) user.allowedSections = allowedSections;
+        if (password) user.password = password;
+
+        await user.save();
+        
+        // Remove password from response
+        const userObj = user.toObject() as any;
+        delete userObj.password;
+
+        res.json({ success: true, data: userObj });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Server error', error });
     }

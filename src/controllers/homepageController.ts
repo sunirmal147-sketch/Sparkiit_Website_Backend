@@ -4,18 +4,48 @@ import Service from '../models/Service';
 import SectionContent from '../models/SectionContent';
 import Testimonial from '../models/Testimonial';
 import PageModel from '../models/PageModel';
+import Blog from '../models/Blog';
+import Event from '../models/Event';
+import Mentor from '../models/Mentor';
+import Brand from '../models/Brand';
+import SocialLink from '../models/SocialLink';
+import Faq from '../models/Faq';
+import FooterSetting from '../models/FooterSetting';
+import Menu from '../models/Menu';
 
 // @desc    Get all homepage data
 // @route   GET /api/public/homepage
 // @access  Public
 export const getHomepageData = async (req: Request, res: Response) => {
     try {
-        const [projects, services, contents, testimonials, homePage] = await Promise.all([
+        const [
+            projects, 
+            services, 
+            contents, 
+            testimonials, 
+            homePage,
+            blogs,
+            events,
+            mentors,
+            brands,
+            socialLinks,
+            faqs,
+            footerSettings,
+            menus
+        ] = await Promise.all([
             Project.find().sort({ order: 1 }),
             Service.find().sort({ order: 1 }),
             SectionContent.find(),
             Testimonial.find().sort({ order: 1 }),
-            PageModel.findOne({ name: 'Home' })
+            PageModel.findOne({ name: 'Home' }),
+            Blog.find().sort({ createdAt: -1 }).limit(6),
+            Event.find().sort({ date: 1 }),
+            Mentor.find().sort({ order: 1 }),
+            Brand.find().sort({ order: 1 }),
+            SocialLink.find().sort({ order: 1 }),
+            Faq.find().sort({ order: 1 }),
+            FooterSetting.find(),
+            Menu.find().sort({ order: 1 })
         ]);
 
         // Transform contents array into a nested object
@@ -31,6 +61,14 @@ export const getHomepageData = async (req: Request, res: Response) => {
                 projects,
                 services,
                 testimonials,
+                blogs,
+                events,
+                mentors,
+                brands,
+                socialLinks,
+                faqs,
+                footerSettings,
+                menus,
                 content: contentMap,
                 pageStructure: homePage?.sections || []
             }

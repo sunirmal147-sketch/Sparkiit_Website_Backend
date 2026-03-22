@@ -5,7 +5,7 @@ import Course from '../models/Course';
 // GET /api/admin/candidates
 export const getAllCandidates = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { search, status } = req.query;
+        const { search, status, courseId } = req.query;
         const filter: Record<string, unknown> = {};
 
         if (search) {
@@ -15,6 +15,7 @@ export const getAllCandidates = async (req: Request, res: Response): Promise<voi
             ];
         }
         if (status) filter.status = status;
+        if (courseId) filter.enrolledCourses = courseId;
 
         const candidates = await Candidate.find(filter)
             .populate('enrolledCourses', 'title category status')
@@ -43,10 +44,11 @@ export const getCandidateById = async (req: Request, res: Response): Promise<voi
 // POST /api/admin/candidates
 export const createCandidate = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { name, email, phone, status, enrolledCourses, paymentDetails, performanceMetrics, batchRank, stipendEligible, skills } = req.body;
+        const { name, email, password, phone, status, enrolledCourses, paymentDetails, performanceMetrics, batchRank, stipendEligible, skills } = req.body;
         const candidate = await Candidate.create({
             name,
             email,
+            password,
             phone: phone || '',
             status: status || 'active',
             enrolledCourses: enrolledCourses || [],
@@ -73,17 +75,22 @@ export const createCandidate = async (req: Request, res: Response): Promise<void
 // PUT /api/admin/candidates/:id
 export const updateCandidate = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { enrolledCourses, ...updateData } = req.body;
-        const candidate = await Candidate.findByIdAndUpdate(req.params.id, updateData, {
-            new: true,
-            runValidators: true,
-        }).populate('enrolledCourses', 'title category status');
-
+        const { password, ...updateData } = req.body;
+        
+        const candidate = await Candidate.findById(req.params.id);
         if (!candidate) {
             res.status(404).json({ success: false, message: 'Candidate not found' });
             return;
         }
-        res.json({ success: true, data: candidate });
+
+        // Apply updates
+        Object.assign(candidate, updateData);
+        if (password) candidate.password = password;
+
+        await candidate.save();
+        const populated = await candidate.populate('enrolledCourses', 'title category status');
+
+        res.json({ success: true, data: populated });
     } catch (error: unknown) {
         if (error instanceof Error && error.name === 'ValidationError') {
             res.status(400).json({ success: false, message: 'Validation error', error: error.message });

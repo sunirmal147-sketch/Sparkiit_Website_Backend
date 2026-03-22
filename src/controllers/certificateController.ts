@@ -30,7 +30,7 @@ export const validateCertificate = async (req: Request, res: Response): Promise<
 // GET /api/admin/certificates
 export const getAllCertificates = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { search } = req.query;
+        const { search, courseName } = req.query;
         const filter: Record<string, any> = {};
 
         if (search) {
@@ -40,6 +40,10 @@ export const getAllCertificates = async (req: Request, res: Response): Promise<v
                 { certificateId: { $regex: search as string, $options: 'i' } },
                 { courseName: { $regex: search as string, $options: 'i' } },
             ];
+        }
+
+        if (courseName) {
+            filter.courseName = courseName;
         }
 
         const certificates = await Certificate.find(filter).sort({ createdAt: -1 });
@@ -72,6 +76,33 @@ export const createCertificate = async (req: Request, res: Response): Promise<vo
         }
         if (error.code === 11000) {
             res.status(400).json({ success: false, message: 'Certificate ID already exists' });
+            return;
+        }
+        res.status(500).json({ success: false, message: 'Server error', error });
+    }
+};
+
+// Admin: Bulk Issue Certificates
+// POST /api/admin/certificates/bulk
+export const bulkCreateCertificates = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { certificates } = req.body; // Expecting array of { certificateId, candidateName, candidateEmail, courseName, issueDate, grade }
+        
+        if (!certificates || !Array.isArray(certificates)) {
+            res.status(400).json({ success: false, message: 'Expected an array of certificates' });
+            return;
+        }
+
+        const results = await Certificate.insertMany(certificates, { ordered: false });
+        res.status(201).json({ success: true, count: results.length, data: results });
+    } catch (error: any) {
+        if (error.name === 'BulkWriteError' || error.code === 11000) {
+            // Some succeeded, some failed (likely duplicate IDs)
+            res.status(207).json({ 
+                success: true, 
+                message: 'Partial success. Some certificates might have failed due to duplicate IDs.',
+                error: error.writeErrors ? error.writeErrors.map((e: any) => e.errmsg) : error.message 
+            });
             return;
         }
         res.status(500).json({ success: false, message: 'Server error', error });
