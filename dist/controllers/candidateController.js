@@ -9,7 +9,7 @@ const Course_1 = __importDefault(require("../models/Course"));
 // GET /api/admin/candidates
 const getAllCandidates = async (req, res) => {
     try {
-        const { search, status } = req.query;
+        const { search, status, courseId } = req.query;
         const filter = {};
         if (search) {
             filter.$or = [
@@ -19,6 +19,8 @@ const getAllCandidates = async (req, res) => {
         }
         if (status)
             filter.status = status;
+        if (courseId)
+            filter.enrolledCourses = courseId;
         const candidates = await Candidate_1.default.find(filter)
             .populate('enrolledCourses', 'title category status')
             .sort({ createdAt: -1 });
@@ -47,10 +49,11 @@ exports.getCandidateById = getCandidateById;
 // POST /api/admin/candidates
 const createCandidate = async (req, res) => {
     try {
-        const { name, email, phone, status, enrolledCourses, paymentDetails, performanceMetrics, batchRank, stipendEligible, skills } = req.body;
+        const { name, email, password, phone, status, enrolledCourses, paymentDetails, performanceMetrics, batchRank, stipendEligible, skills } = req.body;
         const candidate = await Candidate_1.default.create({
             name,
             email,
+            password,
             phone: phone || '',
             status: status || 'active',
             enrolledCourses: enrolledCourses || [],
@@ -78,16 +81,19 @@ exports.createCandidate = createCandidate;
 // PUT /api/admin/candidates/:id
 const updateCandidate = async (req, res) => {
     try {
-        const { enrolledCourses, ...updateData } = req.body;
-        const candidate = await Candidate_1.default.findByIdAndUpdate(req.params.id, updateData, {
-            new: true,
-            runValidators: true,
-        }).populate('enrolledCourses', 'title category status');
+        const { password, ...updateData } = req.body;
+        const candidate = await Candidate_1.default.findById(req.params.id);
         if (!candidate) {
             res.status(404).json({ success: false, message: 'Candidate not found' });
             return;
         }
-        res.json({ success: true, data: candidate });
+        // Apply updates
+        Object.assign(candidate, updateData);
+        if (password)
+            candidate.password = password;
+        await candidate.save();
+        const populated = await candidate.populate('enrolledCourses', 'title category status');
+        res.json({ success: true, data: populated });
     }
     catch (error) {
         if (error instanceof Error && error.name === 'ValidationError') {

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteCertificate = exports.createCertificate = exports.getAllCertificates = exports.validateCertificate = void 0;
+exports.deleteCertificate = exports.bulkCreateCertificates = exports.createCertificate = exports.getAllCertificates = exports.validateCertificate = void 0;
 const Certificate_1 = __importDefault(require("../models/Certificate"));
 // Public: Validate certificate by email
 // GET /api/public/validate-certificate?email=...
@@ -31,7 +31,7 @@ exports.validateCertificate = validateCertificate;
 // GET /api/admin/certificates
 const getAllCertificates = async (req, res) => {
     try {
-        const { search } = req.query;
+        const { search, courseName } = req.query;
         const filter = {};
         if (search) {
             filter.$or = [
@@ -40,6 +40,9 @@ const getAllCertificates = async (req, res) => {
                 { certificateId: { $regex: search, $options: 'i' } },
                 { courseName: { $regex: search, $options: 'i' } },
             ];
+        }
+        if (courseName) {
+            filter.courseName = courseName;
         }
         const certificates = await Certificate_1.default.find(filter).sort({ createdAt: -1 });
         res.json({ success: true, data: certificates, count: certificates.length });
@@ -77,6 +80,32 @@ const createCertificate = async (req, res) => {
     }
 };
 exports.createCertificate = createCertificate;
+// Admin: Bulk Issue Certificates
+// POST /api/admin/certificates/bulk
+const bulkCreateCertificates = async (req, res) => {
+    try {
+        const { certificates } = req.body; // Expecting array of { certificateId, candidateName, candidateEmail, courseName, issueDate, grade }
+        if (!certificates || !Array.isArray(certificates)) {
+            res.status(400).json({ success: false, message: 'Expected an array of certificates' });
+            return;
+        }
+        const results = await Certificate_1.default.insertMany(certificates, { ordered: false });
+        res.status(201).json({ success: true, count: results.length, data: results });
+    }
+    catch (error) {
+        if (error.name === 'BulkWriteError' || error.code === 11000) {
+            // Some succeeded, some failed (likely duplicate IDs)
+            res.status(207).json({
+                success: true,
+                message: 'Partial success. Some certificates might have failed due to duplicate IDs.',
+                error: error.writeErrors ? error.writeErrors.map((e) => e.errmsg) : error.message
+            });
+            return;
+        }
+        res.status(500).json({ success: false, message: 'Server error', error });
+    }
+};
+exports.bulkCreateCertificates = bulkCreateCertificates;
 // Admin: Delete certificate
 // DELETE /api/admin/certificates/:id
 const deleteCertificate = async (req, res) => {

@@ -28,6 +28,7 @@ const bookingController_1 = require("../controllers/bookingController");
 const testimonialController_1 = require("../controllers/testimonialController");
 const mentorController_1 = require("../controllers/mentorController");
 const eventController_1 = require("../controllers/eventController");
+const attendanceController_1 = require("../controllers/attendanceController");
 const router = (0, express_1.Router)();
 // Authentication
 router.post('/login', authController_1.login);
@@ -58,6 +59,7 @@ router.post('/candidates/:id/remove-course', authMiddleware_1.protect, (0, authM
 // Certificate routes
 router.get('/certificates', authMiddleware_1.protect, certificateController_1.getAllCertificates);
 router.post('/certificates', authMiddleware_1.protect, (0, authMiddleware_1.authorize)('SUPER_ADMIN'), certificateController_1.createCertificate);
+router.post('/certificates/bulk', authMiddleware_1.protect, (0, authMiddleware_1.authorize)('SUPER_ADMIN'), certificateController_1.bulkCreateCertificates);
 router.delete('/certificates/:id', authMiddleware_1.protect, (0, authMiddleware_1.authorize)('SUPER_ADMIN'), certificateController_1.deleteCertificate);
 // CMS: Content Routes
 router.get('/content', authMiddleware_1.protect, contentController_1.getAllContent);
@@ -159,4 +161,8 @@ router.get('/events', authMiddleware_1.protect, eventController_1.getAllEventsAd
 router.post('/events', authMiddleware_1.protect, (0, authMiddleware_1.authorize)('SUPER_ADMIN'), eventController_1.createEvent);
 router.put('/events/:id', authMiddleware_1.protect, (0, authMiddleware_1.authorize)('SUPER_ADMIN'), eventController_1.updateEvent);
 router.delete('/events/:id', authMiddleware_1.protect, (0, authMiddleware_1.authorize)('SUPER_ADMIN'), eventController_1.deleteEvent);
+// Attendance
+router.get('/attendance', authMiddleware_1.protect, (0, authMiddleware_1.authorize)('SUPER_ADMIN'), attendanceController_1.getAllAttendance);
+router.post('/attendance', authMiddleware_1.protect, attendanceController_1.logAttendance);
+router.delete('/attendance/:id', authMiddleware_1.protect, (0, authMiddleware_1.authorize)('SUPER_ADMIN'), attendanceController_1.deleteAttendance);
 exports.default = router;

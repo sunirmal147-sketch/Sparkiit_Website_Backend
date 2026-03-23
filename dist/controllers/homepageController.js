@@ -8,16 +8,34 @@ const Project_1 = __importDefault(require("../models/Project"));
 const Service_1 = __importDefault(require("../models/Service"));
 const SectionContent_1 = __importDefault(require("../models/SectionContent"));
 const Testimonial_1 = __importDefault(require("../models/Testimonial"));
+const PageModel_1 = __importDefault(require("../models/PageModel"));
+const Blog_1 = __importDefault(require("../models/Blog"));
+const Event_1 = __importDefault(require("../models/Event"));
+const Mentor_1 = __importDefault(require("../models/Mentor"));
+const Brand_1 = __importDefault(require("../models/Brand"));
+const SocialLink_1 = __importDefault(require("../models/SocialLink"));
+const Faq_1 = __importDefault(require("../models/Faq"));
+const FooterSetting_1 = __importDefault(require("../models/FooterSetting"));
+const Menu_1 = __importDefault(require("../models/Menu"));
 // @desc    Get all homepage data
 // @route   GET /api/public/homepage
 // @access  Public
 const getHomepageData = async (req, res) => {
     try {
-        const [projects, services, contents, testimonials] = await Promise.all([
+        const [projects, services, contents, testimonials, homePage, blogs, events, mentors, brands, socialLinks, faqs, footerSettings, menus] = await Promise.all([
             Project_1.default.find().sort({ order: 1 }),
             Service_1.default.find().sort({ order: 1 }),
             SectionContent_1.default.find(),
-            Testimonial_1.default.find().sort({ order: 1 })
+            Testimonial_1.default.find().sort({ order: 1 }),
+            PageModel_1.default.findOne({ name: 'Home' }),
+            Blog_1.default.find().sort({ createdAt: -1 }).limit(6),
+            Event_1.default.find().sort({ date: 1 }),
+            Mentor_1.default.find().sort({ order: 1 }),
+            Brand_1.default.find().sort({ order: 1 }),
+            SocialLink_1.default.find().sort({ order: 1 }),
+            Faq_1.default.find().sort({ order: 1 }),
+            FooterSetting_1.default.find(),
+            Menu_1.default.find().sort({ order: 1 })
         ]);
         // Transform contents array into a nested object
         const contentMap = {};
@@ -32,7 +50,16 @@ const getHomepageData = async (req, res) => {
                 projects,
                 services,
                 testimonials,
-                content: contentMap
+                blogs,
+                events,
+                mentors,
+                brands,
+                socialLinks,
+                faqs,
+                footerSettings,
+                menus,
+                content: contentMap,
+                pageStructure: homePage?.sections || []
             }
         });
     }

@@ -34,14 +34,28 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
-const PageModelSchema = new mongoose_1.Schema({
-    name: { type: String, required: true },
-    sections: [{
-            name: { type: String, required: true },
-            enabled: { type: Boolean, default: true },
-            order: { type: Number, required: true }
-        }]
+const AttendanceSchema = new mongoose_1.Schema({
+    user: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+    },
+    photoUrl: {
+        type: String,
+    },
+    timestamp: {
+        type: Date,
+        default: Date.now,
+    },
+    type: {
+        type: String,
+        enum: ['LOGIN', 'LOGOUT'],
+        default: 'LOGIN',
+    },
+    ip: {
+        type: String,
+    },
 }, {
-    timestamps: true
+    timestamps: true,
 });
-exports.default = mongoose_1.default.models.PageModel || mongoose_1.default.model('PageModel', PageModelSchema);
+exports.default = mongoose_1.default.model('Attendance', AttendanceSchema);
