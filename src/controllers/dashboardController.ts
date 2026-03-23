@@ -18,10 +18,13 @@ export const getDashboardData = asyncHandler(async (req: Request, res: Response)
     }
 
     res.json({
-        stats: candidate.performanceMetrics,
-        enrolledCourses: candidate.enrolledCourses,
-        tests: candidate.completedTests,
-        projects: candidate.submittedProjects,
+        success: true,
+        data: {
+            stats: candidate.performanceMetrics,
+            enrolledCourses: candidate.enrolledCourses,
+            tests: candidate.completedTests,
+            projects: candidate.submittedProjects,
+        }
     });
 });
 
@@ -30,7 +33,7 @@ export const getDashboardData = asyncHandler(async (req: Request, res: Response)
 // @access  Private/Candidate
 export const getStudentCertificates = asyncHandler(async (req: Request, res: Response) => {
     const certificates = await Certificate.find({ candidateEmail: req.user?.email });
-    res.json(certificates);
+    res.json({ success: true, data: certificates });
 });
 
 // @desc    Get available tests for enrolled courses
@@ -44,7 +47,7 @@ export const getStudentTests = asyncHandler(async (req: Request, res: Response) 
     }
 
     const tests = await Test.find({ courseId: { $in: candidate.enrolledCourses } });
-    res.json(tests);
+    res.json({ success: true, data: tests });
 });
 
 // @desc    Submit a project
@@ -71,5 +74,5 @@ export const submitProject = asyncHandler(async (req: Request, res: Response) =>
         },
     });
 
-    res.status(201).json(submission);
+    res.status(201).json({ success: true, data: submission });
 });
