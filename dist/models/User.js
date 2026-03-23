@@ -59,9 +59,13 @@ const UserSchema = new mongoose_1.Schema({
     },
     role: {
         type: String,
-        enum: ['SUPER_ADMIN', 'ADMIN', 'USER'],
+        enum: ['SUPER_ADMIN', 'ADMIN', 'HR', 'TEAM_LEADER', 'MANAGER', 'BDE', 'BDA', 'USER'],
         default: 'ADMIN',
     },
+    allowedSections: {
+        type: [String],
+        default: []
+    }
 }, {
     timestamps: true,
 });

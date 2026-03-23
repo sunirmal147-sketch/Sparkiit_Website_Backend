@@ -72,7 +72,33 @@ const seedData = async () => {
             { model: PageModel_1.default, names: ['Home', 'About', 'Contact', 'Services'] }
         ];
         for (const item of nameModels) {
-            await item.model.insertMany(item.names.map(name => ({ name })));
+            if (item.model === PageModel_1.default) {
+                const homeSections = [
+                    { name: 'HeroSection', enabled: true, order: 1 },
+                    { name: 'Marquee', enabled: true, order: 2 },
+                    { name: 'HorizontalScroll', enabled: true, order: 3 },
+                    { name: 'ServicesOverview', enabled: true, order: 4 },
+                    { name: 'Collaborations', enabled: true, order: 5 },
+                    { name: 'OurStory', enabled: true, order: 6 },
+                    { name: 'Colleges', enabled: true, order: 7 },
+                    { name: 'ReviewSection', enabled: true, order: 8 },
+                    { name: 'WorkingProcess', enabled: true, order: 9 },
+                    { name: 'LatestProjects', enabled: true, order: 10 },
+                    { name: 'ParallaxImage', enabled: true, order: 11 },
+                    { name: 'CompanyInsights', enabled: true, order: 12 },
+                    { name: 'RoadmapSection', enabled: true, order: 13 },
+                    { name: 'FeaturedIn', enabled: true, order: 14 },
+                    { name: 'Testimonials', enabled: true, order: 15 },
+                    { name: 'MentorsSection', enabled: true, order: 16 }
+                ];
+                await PageModel_1.default.insertMany(item.names.map(name => ({
+                    name,
+                    sections: name === 'Home' ? homeSections : []
+                })));
+            }
+            else {
+                await item.model.insertMany(item.names.map(name => ({ name })));
+            }
             console.log(`🌱 Seeded ${item.model.modelName}`);
         }
         // 3. Courses

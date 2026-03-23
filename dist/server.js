@@ -71,4 +71,8 @@ app.get('/', (req, res) => {
 exports.default = app;
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
+    console.log('--- Environment Config ---');
+    console.log('NODE_ENV:', process.env.NODE_ENV || 'development');
+    console.log('FRONTEND_URI:', process.env.FRONTEND_URI || 'Not Set');
+    console.log('--------------------------');
 });
