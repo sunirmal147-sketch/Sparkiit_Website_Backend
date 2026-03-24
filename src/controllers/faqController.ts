@@ -3,7 +3,7 @@ import Faq from '../models/Faq';
 
 export const getAllFaqs = async (req: Request, res: Response): Promise<void> => {
     try {
-        const items = await Faq.find();
+        const items = await Faq.find().sort({ order: 1, createdAt: -1 });
         res.json({ success: true, data: items });
     } catch (error: any) {
         res.status(500).json({ success: false, message: error.message });
