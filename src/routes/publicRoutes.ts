@@ -11,6 +11,7 @@ import { getAllTestimonialsPublic } from '../controllers/testimonialController';
 import { getAllBlogs } from '../controllers/blogController';
 import { getPublicMentors } from '../controllers/mentorController';
 import { getAllEventsPublic } from '../controllers/eventController';
+import { getAllFaqs } from '../controllers/faqController';
 
 const router = express.Router();
 
@@ -21,6 +22,7 @@ router.get('/testimonials', getAllTestimonialsPublic);
 router.get('/blogs', getAllBlogs);
 router.get('/mentors', getPublicMentors);
 router.get('/events', getAllEventsPublic);
+router.get('/faqs', getAllFaqs);
 
 // Candidate Authentication
 router.post('/auth/signup', signup);

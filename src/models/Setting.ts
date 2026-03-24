@@ -1,11 +1,15 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface ISetting extends Document {
-    name: string;
+    key: string;
+    value: string;
+    group: string;
 }
 
 const SettingSchema: Schema = new Schema({
-    name: { type: String, required: true },
+    key: { type: String, required: true, unique: true },
+    value: { type: String, default: "" },
+    group: { type: String, default: "general" }, // e.g., 'general', 'social', 'seo'
 }, {
     timestamps: true
 });

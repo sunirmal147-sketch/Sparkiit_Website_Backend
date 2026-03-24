@@ -8,6 +8,22 @@ export const getAllSettings = async (req: Request, res: Response): Promise<void>
     } catch (error: any) {
         res.status(500).json({ success: false, message: error.message });
     }
+}
+
+export const upsertSetting = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { key, value, group } = req.body;
+        if (!key) { res.status(400).json({ success: false, message: 'Key is required' }); return; }
+        
+        const item = await Setting.findOneAndUpdate(
+            { key },
+            { value, group },
+            { new: true, upsert: true, runValidators: true }
+        );
+        res.json({ success: true, data: item });
+    } catch (error: any) {
+        res.status(400).json({ success: false, message: error.message });
+    }
 };
 
 export const createSetting = async (req: Request, res: Response): Promise<void> => {

@@ -60,7 +60,7 @@ import { getAllMenus, createMenu, updateMenu, deleteMenu } from '../controllers/
 import { getAllPageModels, createPageModel, updatePageModel, deletePageModel } from '../controllers/pageModelController';
 import { getAllSocialLinks, createSocialLink, updateSocialLink, deleteSocialLink } from '../controllers/socialLinkController';
 import { getAllFaqs, createFaq, updateFaq, deleteFaq } from '../controllers/faqController';
-import { getAllSettings, createSetting, updateSetting, deleteSetting } from '../controllers/settingController';
+import { getAllSettings, upsertSetting, createSetting, updateSetting, deleteSetting } from '../controllers/settingController';
 import { getAllBookings, updateBookingStatus, deleteBooking } from '../controllers/bookingController';
 import {
     getAllTestimonialsAdmin,
@@ -217,6 +217,7 @@ router.delete('/faqs/:id', protect, authorize('SUPER_ADMIN'), deleteFaq);
 
 // Settings
 router.get('/settings', protect, getAllSettings);
+router.post('/settings-upsert', protect, authorize('SUPER_ADMIN'), upsertSetting);
 router.post('/settings', protect, authorize('SUPER_ADMIN'), createSetting);
 router.put('/settings/:id', protect, authorize('SUPER_ADMIN'), updateSetting);
 router.delete('/settings/:id', protect, authorize('SUPER_ADMIN'), deleteSetting);
