@@ -4,7 +4,7 @@ import Course from '../models/Course';
 // GET /api/admin/courses
 export const getAllCourses = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { search, status, category, minPrice, maxPrice, sortBy } = req.query;
+        const { search, status, category, minPrice, maxPrice, sortBy, level, instructorId, isPopular, showHomepage } = req.query;
         const filter: Record<string, any> = {};
 
         if (search) {
@@ -15,6 +15,10 @@ export const getAllCourses = async (req: Request, res: Response): Promise<void> 
         }
         if (status) filter.status = status;
         if (category) filter.category = category;
+        if (level) filter.level = level;
+        if (instructorId) filter.instructorId = instructorId;
+        if (isPopular !== undefined) filter.isPopular = isPopular === 'true';
+        if (showHomepage !== undefined) filter.showHomepage = showHomepage === 'true';
 
         if (minPrice || maxPrice) {
             filter.price = {};
@@ -28,7 +32,7 @@ export const getAllCourses = async (req: Request, res: Response): Promise<void> 
         else if (sortBy === 'newest') sortOption = { createdAt: -1 };
         else if (sortBy === 'oldest') sortOption = { createdAt: 1 };
 
-        const courses = await Course.find(filter).sort(sortOption);
+        const courses = await Course.find(filter).sort(sortOption).populate('instructorId', 'name email');
         res.json({ success: true, data: courses, count: courses.length });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Server error', error });
@@ -38,7 +42,7 @@ export const getAllCourses = async (req: Request, res: Response): Promise<void> 
 // GET /api/admin/courses/:id
 export const getCourseById = async (req: Request, res: Response): Promise<void> => {
     try {
-        const course = await Course.findById(req.params.id);
+        const course = await Course.findById(req.params.id).populate('instructorId', 'name email');
         if (!course) {
             res.status(404).json({ success: false, message: 'Course not found' });
             return;
@@ -52,24 +56,10 @@ export const getCourseById = async (req: Request, res: Response): Promise<void> 
 // POST /api/admin/courses
 export const createCourse = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { title, description, category, price, duration, status, imageUrl, links } = req.body;
-        const course = await Course.create({
-            title,
-            description,
-            category,
-            price,
-            duration,
-            status: status || 'draft',
-            imageUrl: imageUrl || '',
-            links: links || [],
-        });
+        const course = await Course.create(req.body);
         res.status(201).json({ success: true, data: course });
-    } catch (error: unknown) {
-        if (error instanceof Error && error.name === 'ValidationError') {
-            res.status(400).json({ success: false, message: 'Validation error', error: error.message });
-            return;
-        }
-        res.status(500).json({ success: false, message: 'Server error', error });
+    } catch (error: any) {
+        res.status(400).json({ success: false, message: error.message });
     }
 };
 
@@ -86,12 +76,8 @@ export const updateCourse = async (req: Request, res: Response): Promise<void> =
             return;
         }
         res.json({ success: true, data: course });
-    } catch (error: unknown) {
-        if (error instanceof Error && error.name === 'ValidationError') {
-            res.status(400).json({ success: false, message: 'Validation error', error: error.message });
-            return;
-        }
-        res.status(500).json({ success: false, message: 'Server error', error });
+    } catch (error: any) {
+        res.status(400).json({ success: false, message: error.message });
     }
 };
 
@@ -108,3 +94,4 @@ export const deleteCourse = async (req: Request, res: Response): Promise<void> =
         res.status(500).json({ success: false, message: 'Server error', error });
     }
 };
+

@@ -49,7 +49,13 @@ const OrderSchema: Schema = new Schema(
             enum: ['pending', 'success', 'failed'],
             default: 'pending',
         },
+        saleBy: {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+            default: null
+        }
     },
+
     {
         timestamps: true,
     }

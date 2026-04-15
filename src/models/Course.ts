@@ -9,6 +9,12 @@ export interface ICourse extends Document {
     status: 'active' | 'draft' | 'archived';
     imageUrl: string;
     links: string[];
+    instructorId?: mongoose.Schema.Types.ObjectId;
+    level: 'beginner' | 'intermediate' | 'advanced' | 'all';
+    tags: string[];
+    isApproved: 'approved' | 'pending' | 'rejected';
+    isPopular: boolean;
+    showHomepage: boolean;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -55,6 +61,34 @@ const CourseSchema: Schema = new Schema(
                 trim: true,
             },
         ],
+        instructorId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+        },
+        level: {
+            type: String,
+            enum: ['beginner', 'intermediate', 'advanced', 'all'],
+            default: 'all',
+        },
+        tags: [
+            {
+                type: String,
+                trim: true,
+            },
+        ],
+        isApproved: {
+            type: String,
+            enum: ['approved', 'pending', 'rejected'],
+            default: 'approved',
+        },
+        isPopular: {
+            type: Boolean,
+            default: false,
+        },
+        showHomepage: {
+            type: Boolean,
+            default: true,
+        },
     },
     {
         timestamps: true,

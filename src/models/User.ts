@@ -7,8 +7,10 @@ export interface IUser extends Document {
     password: string;
     role: 'SUPER_ADMIN' | 'ADMIN' | 'HR' | 'TEAM_LEADER' | 'MANAGER' | 'BDE' | 'BDA' | 'USER';
     allowedSections: string[];
+    reportingTo?: mongoose.Types.ObjectId;
     comparePassword(password: string): Promise<boolean>;
 }
+
 
 const UserSchema: Schema = new Schema(
     {
@@ -38,8 +40,14 @@ const UserSchema: Schema = new Schema(
         allowedSections: {
             type: [String],
             default: []
+        },
+        reportingTo: {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+            default: null
         }
     },
+
     {
         timestamps: true,
     }
