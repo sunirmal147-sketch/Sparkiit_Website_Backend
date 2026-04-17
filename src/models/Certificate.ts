@@ -7,6 +7,8 @@ export interface ICertificate extends Document {
     courseName: string;
     issueDate: Date;
     grade?: string;
+    templateId?: mongoose.Types.ObjectId;
+    finalPdfUrl?: string;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -43,6 +45,13 @@ const CertificateSchema: Schema = new Schema(
         grade: {
             type: String,
             trim: true,
+        },
+        templateId: {
+            type: Schema.Types.ObjectId,
+            ref: 'CertificateTemplate',
+        },
+        finalPdfUrl: {
+            type: String,
         },
     },
     {

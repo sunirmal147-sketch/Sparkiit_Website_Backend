@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import Attendance from '../models/Attendance';
+import User from '../models/User';
 
 // Admin: Log attendance
 // POST /api/admin/attendance
@@ -48,5 +49,35 @@ export const deleteAttendance = async (req: Request, res: Response): Promise<voi
         res.json({ success: true, data: {} });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Server error', error });
+    }
+};
+
+/**
+ * GET /api/admin/employees/team-attendance
+ * Fetch attendance logs for subordinates.
+ */
+export const getTeamAttendance = async (req: any, res: Response): Promise<void> => {
+    try {
+        let leadId = req.user._id;
+
+        // Support override for SUPER_ADMIN
+        if (req.user.role === 'SUPER_ADMIN' && req.query.leadId) {
+            leadId = req.query.leadId;
+        }
+
+        let query: any = { reportingTo: leadId };
+        if (req.user.role === 'SUPER_ADMIN' && !req.query.leadId) query = { role: { $ne: 'SUPER_ADMIN' } };
+
+        const subordinates = await User.find(query).select('_id');
+        const subIds = subordinates.map(s => s._id);
+
+        const logs = await Attendance.find({ user: { $in: subIds } })
+            .populate('user', 'username email role')
+            .sort({ timestamp: -1 })
+            .limit(100);
+
+        res.json({ success: true, data: logs });
+    } catch (error: any) {
+        res.status(500).json({ success: false, message: error.message });
     }
 };

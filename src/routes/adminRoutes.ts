@@ -29,6 +29,13 @@ import {
     deleteCertificate,
 } from '../controllers/certificateController';
 import {
+    getAllTemplates,
+    createTemplate,
+    deleteTemplate,
+    uploadTemplatePDF,
+} from '../controllers/templateController';
+import { upload } from '../middleware/uploadMiddleware';
+import {
     getAllContent,
     updateContentBatch,
     updateSingleContent,
@@ -66,14 +73,15 @@ import { getAllBookings, updateBookingStatus, deleteBooking } from '../controlle
 import { getAllTestimonialsAdmin, createTestimonial, updateTestimonial, deleteTestimonial } from '../controllers/testimonialController';
 import { getAllMentors, createMentor, updateMentor, deleteMentor } from '../controllers/mentorController';
 import { getAllEventsAdmin, createEvent, updateEvent, deleteEvent } from '../controllers/eventController';
-import { logAttendance, getAllAttendance, deleteAttendance } from '../controllers/attendanceController';
+import { logAttendance, getAllAttendance, deleteAttendance, getTeamAttendance } from '../controllers/attendanceController';
 
 // --- CURRICULUM IMPORTS ---
 import { getChaptersByCourse, createChapter, updateChapter, deleteChapter } from '../controllers/chapterController';
 import { getLessonsByChapter, createLesson, updateLesson, deleteLesson } from '../controllers/lessonController';
 
 // --- PERFORMANCE IMPORTS ---
-import { getMyTeam, setTarget, getPerformanceStats } from '../controllers/performanceController';
+import { getMyTeam, setTarget, getPerformanceStats, getAllUsersForTeam, deleteTarget, getTeamPerformanceSummary, assignMembers } from '../controllers/performanceController';
+
 
 
 const router = Router();
@@ -124,6 +132,12 @@ router.get('/certificates', protect, getAllCertificates);
 router.post('/certificates', protect, authorize('SUPER_ADMIN'), createCertificate);
 router.post('/certificates/bulk', protect, authorize('SUPER_ADMIN'), bulkCreateCertificates);
 router.delete('/certificates/:id', protect, authorize('SUPER_ADMIN'), deleteCertificate);
+
+// Certificate Templates
+router.get('/certificate-templates', protect, authorize('SUPER_ADMIN'), getAllTemplates);
+router.post('/certificate-templates', protect, authorize('SUPER_ADMIN'), createTemplate);
+router.delete('/certificate-templates/:id', protect, authorize('SUPER_ADMIN'), deleteTemplate);
+router.post('/certificate-templates/upload', protect, authorize('SUPER_ADMIN'), upload.single('pdf'), uploadTemplatePDF);
 
 router.get('/content', protect, getAllContent);
 router.put('/content/batch', protect, authorize('SUPER_ADMIN'), updateContentBatch);
@@ -231,9 +245,16 @@ router.post('/attendance', protect, logAttendance);
 router.delete('/attendance/:id', protect, authorize('SUPER_ADMIN'), deleteAttendance);
 
 // Employee Performance Routes
+router.get('/employees/all-users', protect, authorize('SUPER_ADMIN', 'ADMIN', 'TEAM_LEADER', 'MANAGER'), getAllUsersForTeam);
 router.get('/employees/team', protect, authorize('SUPER_ADMIN', 'ADMIN', 'TEAM_LEADER', 'MANAGER'), getMyTeam);
+router.get('/employees/team-summary', protect, authorize('SUPER_ADMIN', 'ADMIN', 'TEAM_LEADER', 'MANAGER'), getTeamPerformanceSummary);
+router.get('/employees/team-attendance', protect, authorize('SUPER_ADMIN', 'ADMIN', 'TEAM_LEADER', 'MANAGER'), getTeamAttendance);
 router.post('/employees/target', protect, authorize('SUPER_ADMIN', 'ADMIN', 'TEAM_LEADER', 'MANAGER'), setTarget);
+router.post('/employees/assign', protect, authorize('SUPER_ADMIN', 'ADMIN', 'TEAM_LEADER', 'MANAGER'), assignMembers);
+router.delete('/employees/target/:id', protect, authorize('SUPER_ADMIN', 'ADMIN', 'TEAM_LEADER', 'MANAGER'), deleteTarget);
 router.get('/employees/performance/:userId', protect, getPerformanceStats);
+
+
 
 
 export default router;

@@ -7,6 +7,7 @@ import MongoStore from 'connect-mongo';
 import apiRoutes from './routes/api';
 import adminRoutes from './routes/adminRoutes';
 import publicRoutes from './routes/publicRoutes';
+import path from 'path';
 
 dotenv.config();
 
@@ -70,6 +71,9 @@ app.use(session({
 app.use('/api', apiRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/public', publicRoutes);
+
+// Static files (Certificates & Templates)
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 // ratelimmiter
 

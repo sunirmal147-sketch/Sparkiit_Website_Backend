@@ -33,21 +33,16 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
 };
 
 // PUT /api/admin/users/:id/role
-// Notice: We keep the route name but we'll use it to update role and allowedSections
+// Notice: We keep the route name but we'll use it to update role, allowedSections, and reportingTo
 export const updateUserRole = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { role, allowedSections, password } = req.body;
+        const { role, allowedSections, password, reportingTo } = req.body;
         
         const validRoles = ['SUPER_ADMIN', 'ADMIN', 'HR', 'TEAM_LEADER', 'MANAGER', 'BDE', 'BDA', 'USER'];
         if (role && !validRoles.includes(role)) {
             res.status(400).json({ success: false, message: 'Invalid role' });
             return;
         }
-
-        const updateData: any = {};
-        if (role) updateData.role = role;
-        if (allowedSections) updateData.allowedSections = allowedSections;
-        if (password) updateData.password = password;
 
         const user = await User.findById(req.params.id);
         if (!user) {
@@ -56,8 +51,11 @@ export const updateUserRole = async (req: Request, res: Response): Promise<void>
         }
 
         if (role) user.role = role;
-        if (allowedSections) user.allowedSections = allowedSections;
+        if (allowedSections !== undefined) user.allowedSections = allowedSections;
         if (password) user.password = password;
+        if (reportingTo !== undefined) {
+            user.reportingTo = reportingTo === '' || reportingTo === null ? undefined : reportingTo;
+        }
 
         await user.save();
         

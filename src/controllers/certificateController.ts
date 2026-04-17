@@ -1,5 +1,8 @@
-import { Request, Response } from 'express';
 import Certificate from '../models/Certificate';
+import CertificateTemplate from '../models/CertificateTemplate';
+import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import fs from 'fs';
+import path from 'path';
 
 // Public: Validate certificate by email
 // GET /api/public/validate-certificate?email=...
@@ -57,8 +60,59 @@ export const getAllCertificates = async (req: Request, res: Response): Promise<v
 // POST /api/admin/certificates
 export const createCertificate = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { certificateId, candidateName, candidateEmail, courseName, issueDate, grade } = req.body;
+        const { certificateId, candidateName, candidateEmail, courseName, issueDate, grade, templateId } = req.body;
         
+        let finalPdfUrl = '';
+
+        if (templateId) {
+            const template = await CertificateTemplate.findById(templateId);
+            if (template) {
+                // Generate PDF
+                const templatePath = path.join(process.cwd(), template.pdfUrl.startsWith('/') ? template.pdfUrl.slice(1) : template.pdfUrl);
+                
+                if (fs.existsSync(templatePath)) {
+                    const pdfBuffer = fs.readFileSync(templatePath);
+                    const pdfDoc = await PDFDocument.load(pdfBuffer);
+                    const helveticaFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+                    const pages = pdfDoc.getPages();
+                    const firstPage = pages[0];
+                    const { height } = firstPage.getSize();
+
+                    // Overlay fields
+                    for (const field of template.fields) {
+                        let text = '';
+                        if (field.key === 'candidateName') text = candidateName;
+                        else if (field.key === 'courseName') text = courseName;
+                        else if (field.key === 'certificateId') text = certificateId;
+                        else if (field.key === 'issueDate') text = new Date(issueDate || Date.now()).toLocaleDateString();
+                        else if (field.key === 'grade') text = grade || '';
+
+                        if (text) {
+                            // pdf-lib uses Y from bottom, we likely have Y from top from the builder
+                            // Coordinate translation logic: 
+                            // If builder shows Y from top, pdf-lib Y = height - builderY
+                            firstPage.drawText(text, {
+                                x: field.x,
+                                y: height - field.y,
+                                size: field.fontSize || 24,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                            });
+                        }
+                    }
+
+                    const pdfBytes = await pdfDoc.save();
+                    const filename = `cert-${certificateId}-${Date.now()}.pdf`;
+                    const outputDir = path.join(process.cwd(), 'uploads', 'issued');
+                    if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
+                    
+                    const outputPath = path.join(outputDir, filename);
+                    fs.writeFileSync(outputPath, pdfBytes);
+                    finalPdfUrl = `/uploads/issued/${filename}`;
+                }
+            }
+        }
+
         const certificate = await Certificate.create({
             certificateId,
             candidateName,
@@ -66,6 +120,8 @@ export const createCertificate = async (req: Request, res: Response): Promise<vo
             courseName,
             issueDate: issueDate || new Date(),
             grade,
+            templateId,
+            finalPdfUrl
         });
 
         res.status(201).json({ success: true, data: certificate });
@@ -78,7 +134,7 @@ export const createCertificate = async (req: Request, res: Response): Promise<vo
             res.status(400).json({ success: false, message: 'Certificate ID already exists' });
             return;
         }
-        res.status(500).json({ success: false, message: 'Server error', error });
+        res.status(500).json({ success: false, message: 'Server error', error: error.message });
     }
 };
 

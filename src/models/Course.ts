@@ -8,6 +8,7 @@ export interface ICourse extends Document {
     duration: string;
     status: 'active' | 'draft' | 'archived';
     imageUrl: string;
+    paymentLink: string;
     links: string[];
     instructorId?: mongoose.Schema.Types.ObjectId;
     level: 'beginner' | 'intermediate' | 'advanced' | 'all';
@@ -52,6 +53,10 @@ const CourseSchema: Schema = new Schema(
             default: 'draft',
         },
         imageUrl: {
+            type: String,
+            default: '',
+        },
+        paymentLink: {
             type: String,
             default: '',
         },
