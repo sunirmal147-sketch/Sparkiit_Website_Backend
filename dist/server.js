@@ -11,6 +11,7 @@ const connect_mongo_1 = __importDefault(require("connect-mongo"));
 const api_1 = __importDefault(require("./routes/api"));
 const adminRoutes_1 = __importDefault(require("./routes/adminRoutes"));
 const publicRoutes_1 = __importDefault(require("./routes/publicRoutes"));
+const path_1 = __importDefault(require("path"));
 dotenv_1.default.config();
 // Connect to MongoDB
 (0, db_1.default)();
@@ -63,6 +64,8 @@ app.use((0, express_session_1.default)({
 app.use('/api', api_1.default);
 app.use('/api/admin', adminRoutes_1.default);
 app.use('/api/public', publicRoutes_1.default);
+// Static files (Certificates & Templates)
+app.use('/uploads', express_1.default.static(path_1.default.join(process.cwd(), 'uploads')));
 // ratelimmiter
 app.get('/', (req, res) => {
     res.send('Edutech Backend Service is running!');

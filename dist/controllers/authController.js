@@ -77,7 +77,7 @@ exports.getMe = getMe;
 // POST /api/auth/register (Protected, Super Admin only can create admins)
 const register = async (req, res) => {
     try {
-        const { username, email, password, role, allowedSections } = req.body;
+        const { username, email, password, role, allowedSections, reportingTo } = req.body;
         const userExists = await User_1.default.findOne({ email });
         if (userExists) {
             res.status(400).json({ success: false, message: 'User already exists' });
@@ -89,6 +89,7 @@ const register = async (req, res) => {
             password,
             role: role || 'ADMIN',
             allowedSections: allowedSections || [],
+            reportingTo: reportingTo || undefined,
         });
         res.status(201).json({
             success: true,
