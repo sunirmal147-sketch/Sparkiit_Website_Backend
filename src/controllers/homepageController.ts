@@ -12,6 +12,7 @@ import SocialLink from '../models/SocialLink';
 import Faq from '../models/Faq';
 import FooterSetting from '../models/FooterSetting';
 import Menu from '../models/Menu';
+import Setting from '../models/Setting';
 
 // @desc    Get all homepage data
 // @route   GET /api/public/homepage
@@ -31,7 +32,8 @@ export const getHomepageData = async (req: Request, res: Response) => {
             socialLinks,
             faqs,
             footerSettings,
-            menus
+            menus,
+            settings
         ] = await Promise.all([
             Project.find().sort({ order: 1 }),
             Service.find().sort({ order: 1 }),
@@ -45,7 +47,8 @@ export const getHomepageData = async (req: Request, res: Response) => {
             SocialLink.find().sort({ order: 1 }),
             Faq.find().sort({ order: 1 }),
             FooterSetting.find(),
-            Menu.find().sort({ order: 1 })
+            Menu.find().sort({ order: 1 }),
+            Setting.find({ group: 'contact_page' })
         ]);
 
         // Transform contents array into a nested object
@@ -70,6 +73,7 @@ export const getHomepageData = async (req: Request, res: Response) => {
                 footerSettings,
                 menus,
                 content: contentMap,
+                settings: settings.reduce((acc: any, s: any) => ({ ...acc, [s.key]: s.value }), {}),
                 pageStructure: homePage?.sections || []
             }
         });
