@@ -65,6 +65,11 @@ const UserSchema = new mongoose_1.Schema({
     allowedSections: {
         type: [String],
         default: []
+    },
+    reportingTo: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: 'User',
+        default: null
     }
 }, {
     timestamps: true,

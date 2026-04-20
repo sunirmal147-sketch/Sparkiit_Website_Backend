@@ -39,7 +39,8 @@ const PageModelSchema = new mongoose_1.Schema({
     sections: [{
             name: { type: String, required: true },
             enabled: { type: Boolean, default: true },
-            order: { type: Number, required: true }
+            order: { type: Number, required: true },
+            content: { type: mongoose_1.Schema.Types.Mixed, default: {} }
         }]
 }, {
     timestamps: true

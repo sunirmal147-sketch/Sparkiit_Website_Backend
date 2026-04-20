@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request as ExpressRequest, Response as ExpressResponse } from 'express';
 import Project from '../models/Project';
 import Service from '../models/Service';
 import SectionContent from '../models/SectionContent';
@@ -17,7 +17,7 @@ import Setting from '../models/Setting';
 // @desc    Get all homepage data
 // @route   GET /api/public/homepage
 // @access  Public
-export const getHomepageData = async (req: Request, res: Response) => {
+export const getHomepageData = async (req: ExpressRequest, res: ExpressResponse) => {
     try {
         const [
             projects, 

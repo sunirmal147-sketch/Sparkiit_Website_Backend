@@ -1,3 +1,4 @@
+import { Request as ExpressRequest, Response as ExpressResponse } from 'express';
 import Certificate from '../models/Certificate';
 import CertificateTemplate from '../models/CertificateTemplate';
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
@@ -6,7 +7,7 @@ import path from 'path';
 
 // Public: Validate certificate by email
 // GET /api/public/validate-certificate?email=...
-export const validateCertificate = async (req: Request, res: Response): Promise<void> => {
+export const validateCertificate = async (req: ExpressRequest, res: ExpressResponse): Promise<void> => {
     try {
         const { email } = req.query;
 
@@ -31,7 +32,7 @@ export const validateCertificate = async (req: Request, res: Response): Promise<
 
 // Admin: Get all certificates
 // GET /api/admin/certificates
-export const getAllCertificates = async (req: Request, res: Response): Promise<void> => {
+export const getAllCertificates = async (req: ExpressRequest, res: ExpressResponse): Promise<void> => {
     try {
         const { search, courseName } = req.query;
         const filter: Record<string, any> = {};
@@ -58,7 +59,7 @@ export const getAllCertificates = async (req: Request, res: Response): Promise<v
 
 // Admin: Create certificate
 // POST /api/admin/certificates
-export const createCertificate = async (req: Request, res: Response): Promise<void> => {
+export const createCertificate = async (req: ExpressRequest, res: ExpressResponse): Promise<void> => {
     try {
         const { certificateId, candidateName, candidateEmail, courseName, issueDate, grade, templateId } = req.body;
         
@@ -140,7 +141,7 @@ export const createCertificate = async (req: Request, res: Response): Promise<vo
 
 // Admin: Bulk Issue Certificates
 // POST /api/admin/certificates/bulk
-export const bulkCreateCertificates = async (req: Request, res: Response): Promise<void> => {
+export const bulkCreateCertificates = async (req: ExpressRequest, res: ExpressResponse): Promise<void> => {
     try {
         const { certificates } = req.body; // Expecting array of { certificateId, candidateName, candidateEmail, courseName, issueDate, grade }
         
@@ -167,7 +168,7 @@ export const bulkCreateCertificates = async (req: Request, res: Response): Promi
 
 // Admin: Delete certificate
 // DELETE /api/admin/certificates/:id
-export const deleteCertificate = async (req: Request, res: Response): Promise<void> => {
+export const deleteCertificate = async (req: ExpressRequest, res: ExpressResponse): Promise<void> => {
     try {
         const certificate = await Certificate.findByIdAndDelete(req.params.id);
         if (!certificate) {

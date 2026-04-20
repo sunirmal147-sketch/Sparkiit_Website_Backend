@@ -17,7 +17,8 @@ export const getMyTeam = async (req: any, res: Response): Promise<void> => {
         if (req.user.role === 'SUPER_ADMIN' && req.query.leadId) {
             leadId = req.query.leadId;
             const subordinates = await User.find({ reportingTo: leadId }).select('-password').sort({ createdAt: -1 });
-            return res.json({ success: true, data: subordinates });
+            res.json({ success: true, data: subordinates });
+            return;
         }
 
         let subordinates;
@@ -47,6 +48,9 @@ export const getTeamPerformanceSummary = async (req: any, res: Response): Promis
 
         let query: any = { reportingTo: leadId };
         if (req.user.role === 'SUPER_ADMIN' && !req.query.leadId) query = { role: { $ne: 'SUPER_ADMIN' } };
+
+        const subordinates = await User.find(query).select('_id');
+        const subIds = subordinates.map(s => s._id);
 
         const { customStart, customEnd } = req.query;
         let orderMatch: any = { saleBy: { $in: subIds }, status: 'success' };

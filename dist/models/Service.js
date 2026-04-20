@@ -36,6 +36,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
 const ServiceSchema = new mongoose_1.Schema({
     title: { type: String, required: true },
+    description: { type: String, default: "" },
+    link: { type: String, default: "" },
     order: { type: Number, default: 0 }
 }, {
     timestamps: true
