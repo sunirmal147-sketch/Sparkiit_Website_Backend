@@ -17,12 +17,13 @@ const SocialLink_1 = __importDefault(require("../models/SocialLink"));
 const Faq_1 = __importDefault(require("../models/Faq"));
 const FooterSetting_1 = __importDefault(require("../models/FooterSetting"));
 const Menu_1 = __importDefault(require("../models/Menu"));
+const Setting_1 = __importDefault(require("../models/Setting"));
 // @desc    Get all homepage data
 // @route   GET /api/public/homepage
 // @access  Public
 const getHomepageData = async (req, res) => {
     try {
-        const [projects, services, contents, testimonials, homePage, blogs, events, mentors, brands, socialLinks, faqs, footerSettings, menus] = await Promise.all([
+        const [projects, services, contents, testimonials, homePage, blogs, events, mentors, brands, socialLinks, faqs, footerSettings, menus, settings] = await Promise.all([
             Project_1.default.find().sort({ order: 1 }),
             Service_1.default.find().sort({ order: 1 }),
             SectionContent_1.default.find(),
@@ -35,7 +36,8 @@ const getHomepageData = async (req, res) => {
             SocialLink_1.default.find().sort({ order: 1 }),
             Faq_1.default.find().sort({ order: 1 }),
             FooterSetting_1.default.find(),
-            Menu_1.default.find().sort({ order: 1 })
+            Menu_1.default.find().sort({ order: 1 }),
+            Setting_1.default.find({ group: 'contact_page' })
         ]);
         // Transform contents array into a nested object
         const contentMap = {};
@@ -59,6 +61,7 @@ const getHomepageData = async (req, res) => {
                 footerSettings,
                 menus,
                 content: contentMap,
+                settings: settings.reduce((acc, s) => ({ ...acc, [s.key]: s.value }), {}),
                 pageStructure: homePage?.sections || []
             }
         });

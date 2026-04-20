@@ -5,6 +5,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteCertificate = exports.bulkCreateCertificates = exports.createCertificate = exports.getAllCertificates = exports.validateCertificate = void 0;
 const Certificate_1 = __importDefault(require("../models/Certificate"));
+const CertificateTemplate_1 = __importDefault(require("../models/CertificateTemplate"));
+const pdf_lib_1 = require("pdf-lib");
+const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
 // Public: Validate certificate by email
 // GET /api/public/validate-certificate?email=...
 const validateCertificate = async (req, res) => {
@@ -56,7 +60,57 @@ exports.getAllCertificates = getAllCertificates;
 // POST /api/admin/certificates
 const createCertificate = async (req, res) => {
     try {
-        const { certificateId, candidateName, candidateEmail, courseName, issueDate, grade } = req.body;
+        const { certificateId, candidateName, candidateEmail, courseName, issueDate, grade, templateId } = req.body;
+        let finalPdfUrl = '';
+        if (templateId) {
+            const template = await CertificateTemplate_1.default.findById(templateId);
+            if (template) {
+                // Generate PDF
+                const templatePath = path_1.default.join(process.cwd(), template.pdfUrl.startsWith('/') ? template.pdfUrl.slice(1) : template.pdfUrl);
+                if (fs_1.default.existsSync(templatePath)) {
+                    const pdfBuffer = fs_1.default.readFileSync(templatePath);
+                    const pdfDoc = await pdf_lib_1.PDFDocument.load(pdfBuffer);
+                    const helveticaFont = await pdfDoc.embedFont(pdf_lib_1.StandardFonts.HelveticaBold);
+                    const pages = pdfDoc.getPages();
+                    const firstPage = pages[0];
+                    const { height } = firstPage.getSize();
+                    // Overlay fields
+                    for (const field of template.fields) {
+                        let text = '';
+                        if (field.key === 'candidateName')
+                            text = candidateName;
+                        else if (field.key === 'courseName')
+                            text = courseName;
+                        else if (field.key === 'certificateId')
+                            text = certificateId;
+                        else if (field.key === 'issueDate')
+                            text = new Date(issueDate || Date.now()).toLocaleDateString();
+                        else if (field.key === 'grade')
+                            text = grade || '';
+                        if (text) {
+                            // pdf-lib uses Y from bottom, we likely have Y from top from the builder
+                            // Coordinate translation logic: 
+                            // If builder shows Y from top, pdf-lib Y = height - builderY
+                            firstPage.drawText(text, {
+                                x: field.x,
+                                y: height - field.y,
+                                size: field.fontSize || 24,
+                                font: helveticaFont,
+                                color: (0, pdf_lib_1.rgb)(0, 0, 0),
+                            });
+                        }
+                    }
+                    const pdfBytes = await pdfDoc.save();
+                    const filename = `cert-${certificateId}-${Date.now()}.pdf`;
+                    const outputDir = path_1.default.join(process.cwd(), 'uploads', 'issued');
+                    if (!fs_1.default.existsSync(outputDir))
+                        fs_1.default.mkdirSync(outputDir, { recursive: true });
+                    const outputPath = path_1.default.join(outputDir, filename);
+                    fs_1.default.writeFileSync(outputPath, pdfBytes);
+                    finalPdfUrl = `/uploads/issued/${filename}`;
+                }
+            }
+        }
         const certificate = await Certificate_1.default.create({
             certificateId,
             candidateName,
@@ -64,6 +118,8 @@ const createCertificate = async (req, res) => {
             courseName,
             issueDate: issueDate || new Date(),
             grade,
+            templateId,
+            finalPdfUrl
         });
         res.status(201).json({ success: true, data: certificate });
     }
@@ -76,7 +132,7 @@ const createCertificate = async (req, res) => {
             res.status(400).json({ success: false, message: 'Certificate ID already exists' });
             return;
         }
-        res.status(500).json({ success: false, message: 'Server error', error });
+        res.status(500).json({ success: false, message: 'Server error', error: error.message });
     }
 };
 exports.createCertificate = createCertificate;

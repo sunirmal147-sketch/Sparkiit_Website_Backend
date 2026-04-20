@@ -19,10 +19,13 @@ exports.getDashboardData = (0, express_async_handler_1.default)(async (req, res)
         throw new Error('Candidate not found');
     }
     res.json({
-        stats: candidate.performanceMetrics,
-        enrolledCourses: candidate.enrolledCourses,
-        tests: candidate.completedTests,
-        projects: candidate.submittedProjects,
+        success: true,
+        data: {
+            stats: candidate.performanceMetrics,
+            enrolledCourses: candidate.enrolledCourses,
+            tests: candidate.completedTests,
+            projects: candidate.submittedProjects,
+        }
     });
 });
 // @desc    Get student certificates
@@ -30,7 +33,7 @@ exports.getDashboardData = (0, express_async_handler_1.default)(async (req, res)
 // @access  Private/Candidate
 exports.getStudentCertificates = (0, express_async_handler_1.default)(async (req, res) => {
     const certificates = await Certificate_1.default.find({ candidateEmail: req.user?.email });
-    res.json(certificates);
+    res.json({ success: true, data: certificates });
 });
 // @desc    Get available tests for enrolled courses
 // @route   GET /api/public/dashboard/tests
@@ -42,7 +45,7 @@ exports.getStudentTests = (0, express_async_handler_1.default)(async (req, res) 
         throw new Error('Candidate not found');
     }
     const tests = await Test_1.default.find({ courseId: { $in: candidate.enrolledCourses } });
-    res.json(tests);
+    res.json({ success: true, data: tests });
 });
 // @desc    Submit a project
 // @route   POST /api/public/dashboard/projects/submit
@@ -65,5 +68,5 @@ exports.submitProject = (0, express_async_handler_1.default)(async (req, res) =>
             },
         },
     });
-    res.status(201).json(submission);
+    res.status(201).json({ success: true, data: submission });
 });

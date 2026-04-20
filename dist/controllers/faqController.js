@@ -7,7 +7,7 @@ exports.deleteFaq = exports.updateFaq = exports.createFaq = exports.getAllFaqs =
 const Faq_1 = __importDefault(require("../models/Faq"));
 const getAllFaqs = async (req, res) => {
     try {
-        const items = await Faq_1.default.find();
+        const items = await Faq_1.default.find().sort({ order: 1, createdAt: -1 });
         res.json({ success: true, data: items });
     }
     catch (error) {
