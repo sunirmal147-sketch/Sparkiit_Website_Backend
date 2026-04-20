@@ -83,6 +83,14 @@ export const register = async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
+        // Only existing Super Admin can create another Super Admin (if singleton is not enforced)
+        // User requested only ONE person, so we should probably reject if requester is not Super Admin 
+        // AND requested role is Super Admin.
+        if (role === 'SUPER_ADMIN' && req.user.role !== 'SUPER_ADMIN') {
+            res.status(403).json({ success: false, message: 'Not authorized to create Super Admin' });
+            return;
+        }
+
         const user = await User.create({
             username,
             email,

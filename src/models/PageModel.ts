@@ -2,6 +2,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IPageModel extends Document {
     name: string;
+    slug: string;
     sections: {
         name: string;
         enabled: boolean;
@@ -12,6 +13,7 @@ export interface IPageModel extends Document {
 
 const PageModelSchema: Schema = new Schema({
     name: { type: String, required: true },
+    slug: { type: String, required: true, unique: true, index: true },
     sections: [{
         name: { type: String, required: true },
         enabled: { type: Boolean, default: true },

@@ -12,11 +12,25 @@ export const getAllPageModels = async (req: Request, res: Response): Promise<voi
 
 export const createPageModel = async (req: Request, res: Response): Promise<void> => {
     try {
-        const newItem = new PageModel(req.body);
+        const { name, slug, sections } = req.body;
+        // Auto-generate slug if not provided
+        const finalSlug = slug || name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+        
+        const newItem = new PageModel({ name, slug: finalSlug, sections });
         await newItem.save();
         res.status(201).json({ success: true, data: newItem });
     } catch (error: any) {
         res.status(400).json({ success: false, message: error.message });
+    }
+};
+
+export const getPageBySlug = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const item = await PageModel.findOne({ slug: req.params.slug });
+        if (!item) { res.status(404).json({ success: false, message: 'Page not found' }); return; }
+        res.json({ success: true, data: item });
+    } catch (error: any) {
+        res.status(500).json({ success: false, message: error.message });
     }
 };
 

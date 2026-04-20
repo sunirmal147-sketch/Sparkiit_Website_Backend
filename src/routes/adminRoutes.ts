@@ -64,7 +64,7 @@ import { getAllLocations, createLocation, updateLocation, deleteLocation } from 
 import { getAllBrands, createBrand, updateBrand, deleteBrand } from '../controllers/brandController';
 import { getAllFooterSettings, createFooterSetting, updateFooterSetting, deleteFooterSetting } from '../controllers/footerSettingController';
 import { getAllMenus, createMenu, updateMenu, deleteMenu } from '../controllers/menuController';
-import { getAllPageModels, createPageModel, updatePageModel, deletePageModel } from '../controllers/pageModelController';
+import { getAllPageModels, createPageModel, updatePageModel, deletePageModel, getPageBySlug } from '../controllers/pageModelController';
 import { getAllSocialLinks, createSocialLink, updateSocialLink, deleteSocialLink } from '../controllers/socialLinkController';
 import { getAllFaqs, createFaq, updateFaq, deleteFaq } from '../controllers/faqController';
 import { getAllSettings, updateSettingsBulk, upsertSetting, createSetting, updateSetting, deleteSetting } from '../controllers/settingController';
@@ -199,6 +199,7 @@ router.put('/menus/:id', protect, authorize('SUPER_ADMIN'), updateMenu);
 router.delete('/menus/:id', protect, authorize('SUPER_ADMIN'), deleteMenu);
 
 router.get('/pages', protect, getAllPageModels);
+router.get('/pages/slug/:slug', getPageBySlug);
 router.post('/pages', protect, authorize('SUPER_ADMIN'), createPageModel);
 router.put('/pages/:id', protect, authorize('SUPER_ADMIN'), updatePageModel);
 router.delete('/pages/:id', protect, authorize('SUPER_ADMIN'), deletePageModel);

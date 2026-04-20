@@ -12,6 +12,7 @@ import { getAllBlogs } from '../controllers/blogController';
 import { getPublicMentors } from '../controllers/mentorController';
 import { getAllEventsPublic } from '../controllers/eventController';
 import { getAllFaqs } from '../controllers/faqController';
+import { getPageBySlug } from '../controllers/pageModelController';
 
 const router = express.Router();
 
@@ -23,6 +24,7 @@ router.get('/blogs', getAllBlogs);
 router.get('/mentors', getPublicMentors);
 router.get('/events', getAllEventsPublic);
 router.get('/faqs', getAllFaqs);
+router.get('/pages/:slug', getPageBySlug);
 
 // Candidate Authentication
 router.post('/auth/signup', signup);
