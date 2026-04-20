@@ -31,10 +31,11 @@ const update = async () => {
         let homePage = await PageModel.findOne({ name: 'Home' });
         if (homePage) {
             homePage.sections = homeSections;
+            if (!homePage.slug) homePage.slug = 'home';
             await homePage.save();
             console.log('Updated existing Home page structure');
         } else {
-            await PageModel.create({ name: 'Home', sections: homeSections });
+            await PageModel.create({ name: 'Home', slug: 'home', sections: homeSections });
             console.log('Created new Home page structure');
         }
 

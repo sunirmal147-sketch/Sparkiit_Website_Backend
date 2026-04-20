@@ -58,6 +58,42 @@ export const getHomepageData = async (req: ExpressRequest, res: ExpressResponse)
             contentMap[c.section][c.key] = c.value;
         });
 
+        // Ensure Branding overrides logic
+        if (contentMap.hero) {
+            contentMap.hero.tagline = "Not Basic Training. A High Impact Career Engine";
+        }
+        
+        if (!contentMap.site) contentMap.site = {};
+        contentMap.site.footerDesc = "A structured pathway designed for driven students to explore opportunities, develop in-demand skills, and turn career goals into real achievements.";
+        
+        if (!contentMap.expertise) contentMap.expertise = {};
+        contentMap.expertise.title = "TURN UNCERTAINTY INTO DIRECTION";
+        contentMap.expertise.description = "Unlock a vast library of premium domains spanning diverse fields, all led by world renowned experts. Whether you're looking to elevate your career or master new skills, our platform gives you the knowledge and flexibility you need to thrive";
+        
+        if (!contentMap.story) contentMap.story = {};
+        contentMap.story.subtitle = "Since our inception, we have been empowering learners with industry-focused education across diverse domains, helping them build real-world skills, explore career paths, and stay ahead in an ever-evolving digital world.";
+        contentMap.story.description = "Our mission is to empower learners with the knowledge, skills, and guidance they need to shape their future. We believe education should open doors, not create barriers. By combining practical learning with industry expertise, we deliver experiences that are engaging, career-focused, and built for real-world success.";
+        
+        if (!contentMap.insights) contentMap.insights = {};
+        contentMap.insights.description = "Explore fresh insights, industry trends, and expert perspectives through our regularly updated articles and blogs.";
+        
+        if (!contentMap.process) contentMap.process = {};
+        contentMap.process.title = "SPARKIIT CATCHPHRASE";
+        contentMap.process.description = "Focusing on Real Results and Practical Outcomes Rather Than Just Theoretical Learning.";
+        
+        if (!contentMap.testimonials) contentMap.testimonials = {};
+        contentMap.testimonials.subtitle = "Mentors Dedicated to Supporting Your Growth";
+
+        if (!contentMap.mentors) contentMap.mentors = {};
+        contentMap.mentors.subtitle = "Mentors Dedicated to Supporting Your Growth";
+
+        contentMap.process.step1Title = "IDEA";
+        contentMap.process.step1Desc = "Spark your ideas with clarity and purpose, building a strong foundation for your learning journey.";
+        contentMap.process.step2Title = "INNOVATION";
+        contentMap.process.step2Desc = "Transform your ideas into impactful innovation through hands-on training and practical exposure.";
+        contentMap.process.step3Title = "TRANSFORMATION";
+        contentMap.process.step3Desc = "Transform yourself with real-world experience, industry-relevant skills, and career-focused execution.";
+
         res.status(200).json({
             success: true,
             data: {
