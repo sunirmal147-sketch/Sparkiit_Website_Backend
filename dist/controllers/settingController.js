@@ -3,11 +3,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteSetting = exports.updateSetting = exports.createSetting = exports.getAllSettings = void 0;
+exports.deleteSetting = exports.updateSetting = exports.createSetting = exports.upsertSetting = exports.updateSettingsBulk = exports.getAllSettings = void 0;
 const Setting_1 = __importDefault(require("../models/Setting"));
+// GET /api/admin/settings
 const getAllSettings = async (req, res) => {
     try {
-        const items = await Setting_1.default.find();
+        const { group } = req.query;
+        const filter = group ? { group } : {};
+        const items = await Setting_1.default.find(filter);
         res.json({ success: true, data: items });
     }
     catch (error) {
@@ -15,6 +18,41 @@ const getAllSettings = async (req, res) => {
     }
 };
 exports.getAllSettings = getAllSettings;
+// PUT /api/admin/settings/bulk
+// Body: { settings: { [key: string]: { value: any, group: string } } }
+const updateSettingsBulk = async (req, res) => {
+    try {
+        const { settings } = req.body;
+        if (!settings || typeof settings !== 'object') {
+            res.status(400).json({ success: false, message: 'Invalid settings data' });
+            return;
+        }
+        const updates = Object.entries(settings).map(([key, data]) => {
+            return Setting_1.default.findOneAndUpdate({ key }, { value: data.value, group: data.group }, { upsert: true, new: true, runValidators: true });
+        });
+        const results = await Promise.all(updates);
+        res.json({ success: true, data: results });
+    }
+    catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+};
+exports.updateSettingsBulk = updateSettingsBulk;
+const upsertSetting = async (req, res) => {
+    try {
+        const { key, value, group } = req.body;
+        if (!key) {
+            res.status(400).json({ success: false, message: 'Key is required' });
+            return;
+        }
+        const item = await Setting_1.default.findOneAndUpdate({ key }, { value, group }, { new: true, upsert: true, runValidators: true });
+        res.json({ success: true, data: item });
+    }
+    catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+};
+exports.upsertSetting = upsertSetting;
 const createSetting = async (req, res) => {
     try {
         const newItem = new Setting_1.default(req.body);

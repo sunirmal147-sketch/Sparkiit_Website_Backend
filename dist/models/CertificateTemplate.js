@@ -34,18 +34,34 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
-const BlogSchema = new mongoose_1.Schema({
-    title: { type: String, required: true },
-    slug: { type: String, required: true, unique: true },
-    content: { type: String, required: true },
-    authorId: { type: mongoose_1.default.Schema.Types.ObjectId, ref: 'User' },
-    category: { type: String, required: true },
-    imageUrl: { type: String, default: '' },
-    tags: [{ type: String }],
-    status: { type: String, enum: ['publish', 'draft'], default: 'draft' },
-    metaTitle: { type: String },
-    metaDescription: { type: String },
-}, {
-    timestamps: true
+const CertificateFieldSchema = new mongoose_1.Schema({
+    key: { type: String, required: true },
+    label: { type: String, required: true },
+    x: { type: Number, required: true },
+    y: { type: Number, required: true },
+    fontSize: { type: Number, default: 24 },
+    color: { type: String, default: '#000000' },
+    bold: { type: Boolean, default: false },
 });
-exports.default = mongoose_1.default.models.Blog || mongoose_1.default.model('Blog', BlogSchema);
+const CertificateTemplateSchema = new mongoose_1.Schema({
+    name: {
+        type: String,
+        required: [true, 'Template name is required'],
+        trim: true,
+    },
+    type: {
+        type: String,
+        enum: ['INTERNSHIP', 'PROJECT'],
+        default: 'INTERNSHIP',
+    },
+    pdfUrl: {
+        type: String,
+        required: [true, 'PDF file URL is required'],
+    },
+    width: { type: Number, required: true },
+    height: { type: Number, required: true },
+    fields: [CertificateFieldSchema],
+}, {
+    timestamps: true,
+});
+exports.default = mongoose_1.default.models.CertificateTemplate || mongoose_1.default.model('CertificateTemplate', CertificateTemplateSchema);
