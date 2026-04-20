@@ -69,12 +69,44 @@ const CourseSchema = new mongoose_1.Schema({
         type: String,
         default: '',
     },
+    paymentLink: {
+        type: String,
+        default: '',
+    },
     links: [
         {
             type: String,
             trim: true,
         },
     ],
+    instructorId: {
+        type: mongoose_1.default.Schema.Types.ObjectId,
+        ref: 'User',
+    },
+    level: {
+        type: String,
+        enum: ['beginner', 'intermediate', 'advanced', 'all'],
+        default: 'all',
+    },
+    tags: [
+        {
+            type: String,
+            trim: true,
+        },
+    ],
+    isApproved: {
+        type: String,
+        enum: ['approved', 'pending', 'rejected'],
+        default: 'approved',
+    },
+    isPopular: {
+        type: Boolean,
+        default: false,
+    },
+    showHomepage: {
+        type: Boolean,
+        default: true,
+    },
 }, {
     timestamps: true,
 });

@@ -34,46 +34,47 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
-const CertificateSchema = new mongoose_1.Schema({
-    certificateId: {
-        type: String,
-        required: [true, 'Certificate ID is required'],
-        unique: true,
-        trim: true,
-    },
-    candidateName: {
-        type: String,
-        required: [true, 'Candidate name is required'],
-        trim: true,
-    },
-    candidateEmail: {
-        type: String,
-        required: [true, 'Candidate email is required'],
-        trim: true,
-        lowercase: true,
-    },
-    courseName: {
-        type: String,
-        required: [true, 'Course name is required'],
-        trim: true,
-    },
-    issueDate: {
-        type: Date,
-        required: [true, 'Issue date is required'],
-        default: Date.now,
-    },
-    grade: {
-        type: String,
-        trim: true,
-    },
-    templateId: {
+const PerformanceSchema = new mongoose_1.Schema({
+    userId: {
         type: mongoose_1.Schema.Types.ObjectId,
-        ref: 'CertificateTemplate',
+        ref: 'User',
+        required: true,
     },
-    finalPdfUrl: {
+    leadId: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+    },
+    title: {
         type: String,
+        required: [true, 'Title is required'],
+        trim: true,
+    },
+    startDate: {
+        type: Date,
+        required: true,
+    },
+    endDate: {
+        type: Date,
+        required: true,
+    },
+    targetRevenue: {
+        type: Number,
+        default: 0,
+    },
+    targetCount: {
+        type: Number,
+        default: 0,
+    },
+    manualAdjustmentAmount: {
+        type: Number,
+        default: 0,
+    },
+    manualAdjustmentCount: {
+        type: Number,
+        default: 0,
     },
 }, {
     timestamps: true,
 });
-exports.default = mongoose_1.default.model('Certificate', CertificateSchema);
+exports.default = mongoose_1.default.models.Performance || mongoose_1.default.model('Performance', PerformanceSchema);

@@ -69,6 +69,11 @@ const OrderSchema = new mongoose_1.Schema({
         enum: ['pending', 'success', 'failed'],
         default: 'pending',
     },
+    saleBy: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: 'User',
+        default: null
+    }
 }, {
     timestamps: true,
 });

@@ -37,6 +37,7 @@ const mongoose_1 = __importStar(require("mongoose"));
 const FaqSchema = new mongoose_1.Schema({
     question: { type: String, required: true },
     answer: { type: String, required: true },
+    order: { type: Number, default: 0 },
 }, {
     timestamps: true
 });

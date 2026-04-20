@@ -34,46 +34,60 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
-const CertificateSchema = new mongoose_1.Schema({
-    certificateId: {
+const LessonSchema = new mongoose_1.Schema({
+    courseId: {
+        type: mongoose_1.default.Schema.Types.ObjectId,
+        ref: 'Course',
+        required: true,
+    },
+    chapterId: {
+        type: mongoose_1.default.Schema.Types.ObjectId,
+        ref: 'Chapter',
+        required: true,
+    },
+    title: {
         type: String,
-        required: [true, 'Certificate ID is required'],
-        unique: true,
+        required: [true, 'Lesson title is required'],
         trim: true,
     },
-    candidateName: {
-        type: String,
-        required: [true, 'Candidate name is required'],
-        trim: true,
-    },
-    candidateEmail: {
-        type: String,
-        required: [true, 'Candidate email is required'],
-        trim: true,
-        lowercase: true,
-    },
-    courseName: {
-        type: String,
-        required: [true, 'Course name is required'],
-        trim: true,
-    },
-    issueDate: {
-        type: Date,
-        required: [true, 'Issue date is required'],
-        default: Date.now,
-    },
-    grade: {
+    description: {
         type: String,
         trim: true,
     },
-    templateId: {
-        type: mongoose_1.Schema.Types.ObjectId,
-        ref: 'CertificateTemplate',
-    },
-    finalPdfUrl: {
+    lessonType: {
         type: String,
+        enum: ['video', 'text', 'document', 'quiz'],
+        default: 'video',
+    },
+    videoUrl: {
+        type: String,
+        trim: true,
+    },
+    videoDuration: {
+        type: String,
+        trim: true,
+    },
+    documentUrl: {
+        type: String,
+        trim: true,
+    },
+    textContent: {
+        type: String,
+    },
+    order: {
+        type: Number,
+        default: 0,
+    },
+    status: {
+        type: String,
+        enum: ['active', 'inactive'],
+        default: 'active',
+    },
+    isFree: {
+        type: Boolean,
+        default: false,
     },
 }, {
     timestamps: true,
 });
-exports.default = mongoose_1.default.model('Certificate', CertificateSchema);
+exports.default = mongoose_1.default.models.Lesson || mongoose_1.default.model('Lesson', LessonSchema);
