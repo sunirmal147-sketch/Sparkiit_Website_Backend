@@ -8,7 +8,8 @@ const User_1 = __importDefault(require("../models/User"));
 // GET /api/admin/users
 const getAllUsers = async (req, res) => {
     try {
-        const users = await User_1.default.find({}).select('-password').sort({ createdAt: -1 });
+        const query = req.user.role === 'SUPER_ADMIN' ? {} : { role: { $ne: 'SUPER_ADMIN' } };
+        const users = await User_1.default.find(query).select('-password').sort({ createdAt: -1 });
         res.json({ success: true, data: users, count: users.length });
     }
     catch (error) {
@@ -46,9 +47,19 @@ const updateUserRole = async (req, res) => {
             res.status(400).json({ success: false, message: 'Invalid role' });
             return;
         }
+        // Only existing Super Admin can assign Super Admin role
+        if (role === 'SUPER_ADMIN' && req.user.role !== 'SUPER_ADMIN') {
+            res.status(403).json({ success: false, message: 'Not authorized to assign Super Admin role' });
+            return;
+        }
         const user = await User_1.default.findById(req.params.id);
         if (!user) {
             res.status(404).json({ success: false, message: 'User not found' });
+            return;
+        }
+        // Only Super Admin can modify other Super Admins
+        if (user.role === 'SUPER_ADMIN' && req.user.role !== 'SUPER_ADMIN') {
+            res.status(403).json({ success: false, message: 'Not authorized to modify Super Admin' });
             return;
         }
         if (role)

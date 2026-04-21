@@ -36,6 +36,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
 const BrandSchema = new mongoose_1.Schema({
     name: { type: String, required: true },
+    logoUrl: { type: String, default: "" },
+    link: { type: String, default: "" },
+    order: { type: Number, default: 0 }
 }, {
     timestamps: true
 });

@@ -38,6 +38,8 @@ const ServiceSchema = new mongoose_1.Schema({
     title: { type: String, required: true },
     description: { type: String, default: "" },
     link: { type: String, default: "" },
+    icon: { type: String, default: "Globe" },
+    thumbnailUrl: { type: String, default: "" },
     order: { type: Number, default: 0 }
 }, {
     timestamps: true

@@ -8,6 +8,7 @@ import Blog from '../models/Blog';
 import Event from '../models/Event';
 import Mentor from '../models/Mentor';
 import Brand from '../models/Brand';
+import Recognition from '../models/Recognition';
 import SocialLink from '../models/SocialLink';
 import Faq from '../models/Faq';
 import FooterSetting from '../models/FooterSetting';
@@ -31,6 +32,7 @@ export const getHomepageData = async (req: ExpressRequest, res: ExpressResponse)
             brands,
             socialLinks,
             faqs,
+            recognitions,
             footerSettings,
             menus,
             settings
@@ -46,9 +48,10 @@ export const getHomepageData = async (req: ExpressRequest, res: ExpressResponse)
             Brand.find().sort({ order: 1 }),
             SocialLink.find().sort({ order: 1 }),
             Faq.find().sort({ order: 1 }),
+            Recognition.find().sort({ order: 1 }),
             FooterSetting.find(),
             Menu.find().sort({ order: 1 }),
-            Setting.find({ group: 'contact_page' })
+            Setting.find({ group: { $in: ['contact_page', 'enrollment'] } })
         ]);
 
         // Transform contents array into a nested object
@@ -106,6 +109,7 @@ export const getHomepageData = async (req: ExpressRequest, res: ExpressResponse)
                 brands,
                 socialLinks,
                 faqs,
+                recognitions,
                 footerSettings,
                 menus,
                 content: contentMap,

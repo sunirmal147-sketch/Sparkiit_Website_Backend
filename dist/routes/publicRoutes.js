@@ -17,6 +17,7 @@ const blogController_1 = require("../controllers/blogController");
 const mentorController_1 = require("../controllers/mentorController");
 const eventController_1 = require("../controllers/eventController");
 const faqController_1 = require("../controllers/faqController");
+const pageModelController_1 = require("../controllers/pageModelController");
 const router = express_1.default.Router();
 router.get('/homepage', homepageController_1.getHomepageData);
 router.get('/validate-certificate', certificateController_1.validateCertificate);
@@ -26,6 +27,7 @@ router.get('/blogs', blogController_1.getAllBlogs);
 router.get('/mentors', mentorController_1.getPublicMentors);
 router.get('/events', eventController_1.getAllEventsPublic);
 router.get('/faqs', faqController_1.getAllFaqs);
+router.get('/pages/:slug', pageModelController_1.getPageBySlug);
 // Candidate Authentication
 router.post('/auth/signup', candidateAuthController_1.signup);
 router.post('/auth/login', candidateAuthController_1.login);

@@ -34,16 +34,12 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
-const PageModelSchema = new mongoose_1.Schema({
+const RecognitionSchema = new mongoose_1.Schema({
     name: { type: String, required: true },
-    slug: { type: String, required: true, unique: true, index: true },
-    sections: [{
-            name: { type: String, required: true },
-            enabled: { type: Boolean, default: true },
-            order: { type: Number, required: true },
-            content: { type: mongoose_1.Schema.Types.Mixed, default: {} }
-        }]
+    logoUrl: { type: String, required: true },
+    link: { type: String, default: "" },
+    order: { type: Number, default: 0 }
 }, {
     timestamps: true
 });
-exports.default = mongoose_1.default.models.PageModel || mongoose_1.default.model('PageModel', PageModelSchema);
+exports.default = mongoose_1.default.models.Recognition || mongoose_1.default.model('Recognition', RecognitionSchema);

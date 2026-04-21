@@ -67,6 +67,7 @@ import { getAllMenus, createMenu, updateMenu, deleteMenu } from '../controllers/
 import { getAllPageModels, createPageModel, updatePageModel, deletePageModel, getPageBySlug } from '../controllers/pageModelController';
 import { getAllSocialLinks, createSocialLink, updateSocialLink, deleteSocialLink } from '../controllers/socialLinkController';
 import { getAllFaqs, createFaq, updateFaq, deleteFaq } from '../controllers/faqController';
+import { getAllRecognitions, createRecognition, updateRecognition, deleteRecognition } from '../controllers/recognitionController';
 import { getAllSettings, updateSettingsBulk, upsertSetting, createSetting, updateSetting, deleteSetting } from '../controllers/settingController';
 
 import { getAllBookings, updateBookingStatus, deleteBooking } from '../controllers/bookingController';
@@ -213,6 +214,11 @@ router.get('/faqs', protect, getAllFaqs);
 router.post('/faqs', protect, authorize('SUPER_ADMIN'), createFaq);
 router.put('/faqs/:id', protect, authorize('SUPER_ADMIN'), updateFaq);
 router.delete('/faqs/:id', protect, authorize('SUPER_ADMIN'), deleteFaq);
+
+router.get('/recognitions', protect, getAllRecognitions);
+router.post('/recognitions', protect, authorize('SUPER_ADMIN'), createRecognition);
+router.put('/recognitions/:id', protect, authorize('SUPER_ADMIN'), updateRecognition);
+router.delete('/recognitions/:id', protect, authorize('SUPER_ADMIN'), deleteRecognition);
 
 router.get('/settings', protect, getAllSettings);
 router.put('/settings/bulk', protect, authorize('SUPER_ADMIN'), updateSettingsBulk);
