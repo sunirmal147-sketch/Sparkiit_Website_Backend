@@ -17,6 +17,8 @@ export const getDashboardData = asyncHandler(async (req: Request, res: Response)
         throw new Error('Candidate not found');
     }
 
+    const certificatesCount = await Certificate.countDocuments({ candidateEmail: candidate.email });
+    
     res.json({
         success: true,
         data: {
@@ -24,6 +26,12 @@ export const getDashboardData = asyncHandler(async (req: Request, res: Response)
             enrolledCourses: candidate.enrolledCourses,
             tests: candidate.completedTests,
             projects: candidate.submittedProjects,
+            batchRank: candidate.batchRank,
+            stipendEligible: candidate.stipendEligible,
+            skills: candidate.skills,
+            paymentDetails: candidate.paymentDetails,
+            certificatesCount: certificatesCount,
+            name: candidate.name
         }
     });
 });
