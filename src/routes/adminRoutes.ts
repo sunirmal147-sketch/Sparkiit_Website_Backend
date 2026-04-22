@@ -52,6 +52,12 @@ import {
     updateService,
     deleteService,
 } from '../controllers/serviceController';
+import {
+    getAllHorizontalScrollItemsAdmin,
+    createHorizontalScrollItem,
+    updateHorizontalScrollItem,
+    deleteHorizontalScrollItem,
+} from '../controllers/horizontalScrollController';
 import { protect, authorize } from '../middleware/authMiddleware';
 
 // --- DOMAIN IMPORTS ---
@@ -153,6 +159,11 @@ router.get('/services', protect, getAllServicesAdmin);
 router.post('/services', protect, authorize('SUPER_ADMIN'), createService);
 router.put('/services/:id', protect, authorize('SUPER_ADMIN'), updateService);
 router.delete('/services/:id', protect, authorize('SUPER_ADMIN'), deleteService);
+
+router.get('/horizontal-scroll', protect, getAllHorizontalScrollItemsAdmin);
+router.post('/horizontal-scroll', protect, authorize('SUPER_ADMIN'), createHorizontalScrollItem);
+router.put('/horizontal-scroll/:id', protect, authorize('SUPER_ADMIN'), updateHorizontalScrollItem);
+router.delete('/horizontal-scroll/:id', protect, authorize('SUPER_ADMIN'), deleteHorizontalScrollItem);
 
 router.get('/badges', protect, getAllBadges);
 router.post('/badges', protect, authorize('SUPER_ADMIN'), createBadge);

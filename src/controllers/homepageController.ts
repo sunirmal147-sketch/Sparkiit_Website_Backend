@@ -14,6 +14,7 @@ import Faq from '../models/Faq';
 import FooterSetting from '../models/FooterSetting';
 import Menu from '../models/Menu';
 import Setting from '../models/Setting';
+import HorizontalScrollItem from '../models/HorizontalScrollItem';
 
 // @desc    Get all homepage data
 // @route   GET /api/public/homepage
@@ -35,7 +36,8 @@ export const getHomepageData = async (req: ExpressRequest, res: ExpressResponse)
             recognitions,
             footerSettings,
             menus,
-            settings
+            settings,
+            horizontalScrollItems
         ] = await Promise.all([
             Project.find().sort({ order: 1 }),
             Service.find().sort({ order: 1 }),
@@ -51,7 +53,8 @@ export const getHomepageData = async (req: ExpressRequest, res: ExpressResponse)
             Recognition.find().sort({ order: 1 }),
             FooterSetting.find(),
             Menu.find().sort({ order: 1 }),
-            Setting.find({ group: { $in: ['contact_page', 'enrollment'] } })
+            Setting.find({ group: { $in: ['contact_page', 'enrollment'] } }),
+            HorizontalScrollItem.find().sort({ order: 1 })
         ]);
 
         // Transform contents array into a nested object
@@ -114,7 +117,8 @@ export const getHomepageData = async (req: ExpressRequest, res: ExpressResponse)
                 menus,
                 content: contentMap,
                 settings: settings.reduce((acc: any, s: any) => ({ ...acc, [s.key]: s.value }), {}),
-                pageStructure: homePage?.sections || []
+                pageStructure: homePage?.sections || [],
+                horizontalScrollItems
             }
         });
     } catch (error: any) {

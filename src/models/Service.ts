@@ -3,6 +3,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface IService extends Document {
     title: string;
     description: string;
+    category: string;
     link: string;
     icon: string;
     thumbnailUrl: string;
@@ -12,6 +13,7 @@ export interface IService extends Document {
 const ServiceSchema: Schema = new Schema({
     title: { type: String, required: true },
     description: { type: String, default: "" },
+    category: { type: String, default: "" },
     link: { type: String, default: "" },
     icon: { type: String, default: "Globe" },
     thumbnailUrl: { type: String, default: "" },
