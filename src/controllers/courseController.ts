@@ -4,7 +4,7 @@ import Course from '../models/Course';
 // GET /api/admin/courses
 export const getAllCourses = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { search, status, category, minPrice, maxPrice, sortBy, level, instructorId, isPopular, showHomepage } = req.query;
+        const { search, status, category, batchStatus, minPrice, maxPrice, sortBy, level, instructorId, isPopular, showHomepage } = req.query;
         const filter: Record<string, any> = {};
 
         if (search) {
@@ -15,6 +15,7 @@ export const getAllCourses = async (req: Request, res: Response): Promise<void> 
         }
         if (status) filter.status = status;
         if (category) filter.category = category;
+        if (batchStatus) filter.batchStatus = batchStatus;
         if (level) filter.level = level;
         if (instructorId) filter.instructorId = instructorId;
         if (isPopular !== undefined) filter.isPopular = isPopular === 'true';

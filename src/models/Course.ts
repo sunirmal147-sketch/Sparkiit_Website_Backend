@@ -7,6 +7,7 @@ export interface ICourse extends Document {
     price: number;
     duration: string;
     status: 'active' | 'draft' | 'archived';
+    batchStatus: 'ongoing' | 'upcoming' | 'past' | 'self-paced';
     imageUrl: string;
     paymentLink: string;
     links: string[];
@@ -51,6 +52,11 @@ const CourseSchema: Schema = new Schema(
             type: String,
             enum: ['active', 'draft', 'archived'],
             default: 'draft',
+        },
+        batchStatus: {
+            type: String,
+            enum: ['ongoing', 'upcoming', 'past', 'self-paced'],
+            default: 'ongoing',
         },
         imageUrl: {
             type: String,
