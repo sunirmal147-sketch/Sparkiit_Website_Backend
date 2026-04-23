@@ -5,7 +5,7 @@ import { getAllCourses } from '../controllers/courseController';
 import { signup, login, getMe } from '../controllers/candidateAuthController';
 import { createOrder, verifyPayment } from '../controllers/paymentController';
 import { createBooking, getMyBookings } from '../controllers/bookingController';
-import { getDashboardData, getStudentCertificates, getStudentTests, submitProject } from '../controllers/dashboardController';
+import { getDashboardData, getStudentCertificates, getStudentTests, submitProject, updateProfile } from '../controllers/dashboardController';
 import { protect } from '../middleware/authMiddleware';
 import { getAllTestimonialsPublic } from '../controllers/testimonialController';
 import { getAllBlogs } from '../controllers/blogController';
@@ -44,5 +44,6 @@ router.get('/dashboard', protect, getDashboardData);
 router.get('/dashboard/certificates', protect, getStudentCertificates);
 router.get('/dashboard/tests', protect, getStudentTests);
 router.post('/dashboard/projects/submit', protect, submitProject);
+router.put('/dashboard/profile', protect, updateProfile);
 
 export default router;

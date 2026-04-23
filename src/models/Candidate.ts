@@ -19,15 +19,7 @@ export interface ICandidate extends Document {
         progress: number;
         averageScore: number;
     };
-    skills: {
-        tech: number;
-        softSkills: number;
-        blockchain: number;
-        smartContracts: number;
-        frontend: number;
-        ai: number;
-        systemDesign: number;
-    };
+    skills: Map<string, number>;
     status: 'active' | 'inactive';
     comparePassword(password: string): Promise<boolean>;
     createdAt: Date;
@@ -77,13 +69,9 @@ const CandidateSchema: Schema = new Schema(
         batchRank: { type: String, default: 'N/A' },
         stipendEligible: { type: Boolean, default: false },
         skills: {
-            tech: { type: Number, default: 0 },
-            softSkills: { type: Number, default: 0 },
-            blockchain: { type: Number, default: 0 },
-            smartContracts: { type: Number, default: 0 },
-            frontend: { type: Number, default: 0 },
-            ai: { type: Number, default: 0 },
-            systemDesign: { type: Number, default: 0 },
+            type: Map,
+            of: Number,
+            default: {}
         },
         completedTests: [
             {

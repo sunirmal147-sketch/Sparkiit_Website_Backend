@@ -6,6 +6,8 @@ import Certificate from '../models/Certificate';
 import Test from '../models/Test';
 import Submission from '../models/Submission';
 
+import Setting from '../models/Setting';
+
 // @desc    Get student dashboard data
 // @route   GET /api/public/dashboard
 // @access  Private/Candidate
@@ -15,6 +17,29 @@ export const getDashboardData = asyncHandler(async (req: Request, res: Response)
     if (!candidate) {
         res.status(404);
         throw new Error('Candidate not found');
+    }
+
+    const skillSetting = await Setting.findOne({ key: 'skill_categories' });
+    let skillCategories = [];
+    if (skillSetting && skillSetting.value) {
+        try {
+            skillCategories = JSON.parse(skillSetting.value);
+        } catch (e) {
+            skillCategories = skillSetting.value.split(',').map((s: string) => ({
+                id: s.trim().toLowerCase().replace(/\s+/g, '_'),
+                name: s.trim()
+            }));
+        }
+    } else {
+        skillCategories = [
+            { id: 'tech', name: 'Tech' },
+            { id: 'soft_skills', name: 'Soft Skills' },
+            { id: 'blockchain', name: 'Blockchain' },
+            { id: 'smart_contracts', name: 'Smart Contracts' },
+            { id: 'frontend', name: 'Frontend' },
+            { id: 'ai', name: 'AI' },
+            { id: 'system_design', name: 'System Design' }
+        ];
     }
 
     const certificatesCount = await Certificate.countDocuments({ candidateEmail: candidate.email });
@@ -31,7 +56,8 @@ export const getDashboardData = asyncHandler(async (req: Request, res: Response)
             skills: candidate.skills,
             paymentDetails: candidate.paymentDetails,
             certificatesCount: certificatesCount,
-            name: candidate.name
+            name: candidate.name,
+            skillCategories: skillCategories
         }
     });
 });
@@ -83,4 +109,34 @@ export const submitProject = asyncHandler(async (req: Request, res: Response) =>
     });
 
     res.status(201).json({ success: true, data: submission });
+});
+
+// @desc    Update student profile
+// @route   PUT /api/public/dashboard/profile
+// @access  Private/Candidate
+export const updateProfile = asyncHandler(async (req: Request, res: Response) => {
+    const candidate = await Candidate.findById(req.user?._id).select('+password');
+
+    if (!candidate) {
+        res.status(404);
+        throw new Error('Candidate not found');
+    }
+
+    const { name, phone, password } = req.body;
+
+    if (name) candidate.name = name;
+    if (phone) candidate.phone = phone;
+    if (password) candidate.password = password;
+
+    const updatedCandidate = await candidate.save();
+
+    res.json({
+        success: true,
+        data: {
+            _id: updatedCandidate._id,
+            name: updatedCandidate.name,
+            email: updatedCandidate.email,
+            phone: updatedCandidate.phone,
+        },
+    });
 });
