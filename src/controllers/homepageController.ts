@@ -43,7 +43,13 @@ export const getHomepageData = async (req: ExpressRequest, res: ExpressResponse)
             Service.find().sort({ order: 1 }),
             SectionContent.find(),
             Testimonial.find().sort({ order: 1 }),
-            PageModel.findOne({ name: 'Home' }),
+            PageModel.findOne({ 
+                $or: [
+                    { name: /^home$/i },
+                    { slug: 'home' },
+                    { slug: '/' }
+                ]
+            }),
             Blog.find().sort({ createdAt: -1 }).limit(6),
             Event.find().sort({ date: 1 }),
             Mentor.find().sort({ order: 1 }),
