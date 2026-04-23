@@ -57,6 +57,9 @@ export const getDashboardData = asyncHandler(async (req: Request, res: Response)
             paymentDetails: candidate.paymentDetails,
             certificatesCount: certificatesCount,
             name: candidate.name,
+            email: candidate.email,
+            phone: candidate.phone,
+            avatar: candidate.avatar || "",
             skillCategories: skillCategories
         }
     });
@@ -122,11 +125,12 @@ export const updateProfile = asyncHandler(async (req: Request, res: Response) =>
         throw new Error('Candidate not found');
     }
 
-    const { name, phone, password } = req.body;
+    const { name, phone, password, avatar } = req.body;
 
     if (name) candidate.name = name;
     if (phone) candidate.phone = phone;
     if (password) candidate.password = password;
+    if (avatar !== undefined) candidate.avatar = avatar;
 
     const updatedCandidate = await candidate.save();
 
@@ -137,6 +141,7 @@ export const updateProfile = asyncHandler(async (req: Request, res: Response) =>
             name: updatedCandidate.name,
             email: updatedCandidate.email,
             phone: updatedCandidate.phone,
+            avatar: updatedCandidate.avatar || "",
         },
     });
 });

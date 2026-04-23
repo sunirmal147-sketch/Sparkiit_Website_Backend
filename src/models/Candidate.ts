@@ -21,6 +21,7 @@ export interface ICandidate extends Document {
     };
     skills: Map<string, number>;
     status: 'active' | 'inactive';
+    avatar?: string;
     comparePassword(password: string): Promise<boolean>;
     createdAt: Date;
     updatedAt: Date;
@@ -94,6 +95,10 @@ const CandidateSchema: Schema = new Schema(
             type: String,
             enum: ['active', 'inactive'],
             default: 'active',
+        },
+        avatar: {
+            type: String,
+            default: '',
         },
     },
     {
